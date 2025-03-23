@@ -1,0 +1,29 @@
+[package]
+name = "cardbox"
+version = "0.0.0-alpha.0"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+authors = ["Moe <m@tmoe.me>"]
+readme = "docs/Readme.md"
+repository = "https://github.com/2moe/cardbox"
+# exclude = ["/rust-toolchain.toml"]
+categories = ["command-line-utilities"]
+keywords = ["coreutils", "busybox", "cross-platform", "cli", "utility"]
+description = "A modern, modular, and Unix-compatible implementation of core system utilities, designed as both a library and CLI toolkit."
+
+[features]
+std = []
+
+# [dependencies]
+# tap = "1.0"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "__unstable_doc"]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(__unstable_doc)'] }
+
+# [dev-dependencies]
+# testutils = "0.0.5"
