@@ -2,7 +2,7 @@ use std::{env::set_current_dir, io, path::Path};
 
 use testutils::{
   os_cmd::{Runner, fmt_compact},
-  tap::{Conv, Pipe},
+  tap::{Conv, Pipe, Tap},
 };
 
 #[ignore]
@@ -21,7 +21,7 @@ fn cargo_publish() -> io::Result<()> {
       .join(d)
       .pipe(set_current_dir)?;
 
-    "cargo publish --registry crates-io"
+    "cargo publish --registry crates-io --no-verify"
       .conv::<Runner>()
       .run_command()
   })
