@@ -2,7 +2,7 @@ use std::{env::set_current_dir, io, path::Path};
 
 use testutils::{
   os_cmd::{Runner, fmt_compact},
-  tap::{Conv, Pipe, Tap},
+  tap::{Conv, Pipe},
 };
 
 #[ignore]

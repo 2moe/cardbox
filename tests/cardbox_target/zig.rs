@@ -238,7 +238,7 @@ impl ZigTarget {
       "g" => "rocket_rv64+m+a+d",
       x => x,
     };
-    self.mcpu = into_some_ministr(fmt_compact!("{features}"));
+    self.mcpu = into_some_ministr(features);
   }
 }
 
