@@ -10,7 +10,7 @@ use testutils::{
 fn cargo_publish() -> io::Result<()> {
   let workdir = env!("CARGO_MANIFEST_DIR").pipe(Path::new);
   [
-    "cardbox",
+    // "cardbox",
     "cardbox-target",
     // "cli",
   ]

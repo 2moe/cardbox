@@ -17,8 +17,8 @@ categories = ["command-line-utilities"]
 tap = "1.0"
 # mimalloc = "0.1.48"
 anyhow = { version = "1.0", default-features = false }
-rustix = { version = "1.0", default-features = false }
-libc = { version = "0.2.172", default-features = false }
+rustix = { version = "1.1", default-features = false }
+libc = { version = "0.2.182", default-features = false }
 compact_str = { version = "0.9", default-features = false }
 # path = "../testutils"
 testutils = { version = "0.0.12", default-features = false }
