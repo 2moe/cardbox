@@ -9,6 +9,7 @@ readme = "Readme.md"
 repository.workspace = true
 keywords = ["no-std-cli"]
 categories.workspace = true
+description = "Display the target platform."
 
 # [lints]
 # workspace = true
