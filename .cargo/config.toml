@@ -3,8 +3,8 @@ ta = ["test", "--all-features", "--workspace"]
 
 open-doc = [
     "test",
-    # "--package",
-    # "tests",
+    "--package",
+    "tests",
     "--test",
     "doc",
     "--all-features",
@@ -14,3 +14,32 @@ open-doc = [
     "--show-output",
     "--ignored",
 ]
+
+[target.'cfg(target_env = "musl")']
+rustflags = [
+    "-Ctarget-feature=+crt-static",
+    #
+    "-Clink-self-contained=no",
+]
+
+# RUSTFLAGS="-Clink-self-contained=no" cargo build -p cardbox-target --target loongarch64-unknown-linux-musl --profile fat
+[target.loongarch64-unknown-linux-musl]
+linker = "/opt/cross/loongarch64-unknown-linux-musl/bin/loongarch64-unknown-linux-musl-gcc"
+# rustflags = ["-Clink-self-contained=no"]
+
+[target.mipsel-unknown-linux-musl]
+linker = "/opt/cross/mipsel-unknown-linux-musl/bin/mipsel-unknown-linux-musl-gcc"
+rustflags = ["-Clink-self-contained=no"]
+# RUSTFLAGS="-Clink-self-contained=no -Crelocation-model=static -Zunstable-options -Cpanic=immediate-abort -Clink-arg=-nostartfiles -Ctarget-feature=+crt-static" cargo +nightly build -Zbuild-std=std,panic_abort -Zbuild-std-features='' --target mipsel-unknown-linux-musl --profile fat
+
+[target.riscv64a23-unknown-linux-gnu]
+## zsh:
+# dir=/opt/cross/zig
+# file=$dir/riscv64a23-unknown-linux-gnu-cc
+# mkdir -p $dir
+# > $file <<'EOF'
+# #!/bin/sh
+# zig cc -target riscv64-linux-gnu -mcpu=baseline_rv64+rva23u64 "$@"
+# EOF
+# chmod +x $file
+linker = "/opt/cross/zig/riscv64a23-unknown-linux-gnu-cc"

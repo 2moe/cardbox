@@ -1,0 +1,42 @@
+[package]
+name = "cardbox"
+version.workspace = true
+authors.workspace = true
+# readme = "./docs/Readme.md"
+edition.workspace = true
+license.workspace = true
+# keywords.workspace = true
+# categories.workspace = true
+categories = ["os", "no-std"]
+
+repository.workspace = true
+rust-version.workspace = true
+description = "A modern, modular, and cross-platform implementation of core system utilities."
+
+# [lints]
+# workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "__unstable_doc"]
+
+[features]
+default = ["alloc", "rustix"]
+alloc = ["rustix/alloc"]
+std = []
+rustix = ["dep:rustix"]
+libc = ["dep:libc", "rustix?/use-libc"]
+
+[dependencies]
+libc = { workspace = true, optional = true }
+rustix = { workspace = true, optional = true, features = ["stdio"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = [
+    "Win32_System_Console",
+    "Win32_System_IO",
+    "Win32_Foundation",
+] }
+
+[build-dependencies]
+compact_str.workspace = true

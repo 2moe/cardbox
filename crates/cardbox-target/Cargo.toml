@@ -1,0 +1,44 @@
+[package]
+name = "cardbox-target"
+version = "0.0.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+readme = "Readme.md"
+repository.workspace = true
+keywords = ["no-std-cli"]
+categories.workspace = true
+
+# [lints]
+# workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[target.'cfg(not(windows))'.dependencies]
+libc.workspace = true
+
+[target.'cfg(all(target_os = "linux", any(target_arch = "aarch64", target_arch = "arm", target_arch = "riscv64", target_arch = "x86_64")))'.dependencies]
+rustix = { workspace = true, features = ["stdio"] }
+syscalls.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { workspace = true, features = [
+    # "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_System_IO",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Console",
+] }
+
+[build-dependencies]
+compact_str.workspace = true
+testutils = { workspace = true, features = [
+    "const_str",
+    "std",
+    "re_exports_tap",
+] }
+
+[dev-dependencies]
+testutils = { workspace = true, default-features = true }
