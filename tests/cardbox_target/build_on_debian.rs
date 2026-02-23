@@ -112,7 +112,11 @@ fn linux_gnu(arch: &str, rs_target: RustcTarget) -> io::Result<()> {
     .tap_mut(|v| {
       if need_build_std {
         v.extend(
-          ["-Zbuild-std=core,panic_abort", "-Zbuild-std-features="].map(Into::into),
+          [
+            "-Zbuild-std=core,panic_abort",
+            // "-Zbuild-std-features="
+          ]
+          .map(Into::into),
         )
       }
     })

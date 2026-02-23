@@ -482,11 +482,6 @@ fn freebsd() -> io::Result<()> {
   zig_targets()
     .iter()
     .filter(|x| x.contains("-freebsd"))
-    .filter(|x| {
-      !["m68k-", "sparc-", "sparc64-", "csky-", "hexagon-"]
-        .iter()
-        .any(|arch| x.contains(arch))
-    })
     .map(ZigTarget::from)
     .flat_map(expand_zig_targets)
     .try_for_each(|x| x.build())
@@ -496,23 +491,20 @@ fn freebsd() -> io::Result<()> {
 #[test]
 fn linux() -> io::Result<()> {
   zig_targets()
-    .iter()
-    .filter(|x| x.contains("-linux"))
+    .into_iter()
     .filter(|x| {
       [
         "arm-linux-musleabi",
         "arm-linux-musleabihf",
         "armeb-linux-musleabi",
         "armeb-linux-musleabihf",
-        // "arc-",
-        "thumb-",
-        "thumbeb-",
+        "thumb-linux-musleabi",
+        "thumb-linux-musleabihf",
+        "thumbeb-linux-musleabi",
+        "thumbeb-linux-musleabihf",
         "aarch64_be-linux-musl",
-        "loongarch64-linux-muslsf",
-        // "csky-linux-gnueabihf",
-        "hexagon",
-        // "sparc",
-        // "sparc64",
+        // "loongarch64-linux-muslsf",
+        "hexagon-linux-musl",
         "mips-linux-musleabi",
         "mips-linux-musleabihf",
         "mipsel-linux-musleabi",
@@ -522,7 +514,7 @@ fn linux() -> io::Result<()> {
         "x86-linux-musl",
       ]
       .iter()
-      .any(|arch| x.contains(arch))
+      .any(|arch| x == arch)
     })
     .map(ZigTarget::from)
     .flat_map(expand_zig_targets)

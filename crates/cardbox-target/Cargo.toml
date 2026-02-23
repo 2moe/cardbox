@@ -17,12 +17,16 @@ description = "Display the target platform."
 [package.metadata.docs.rs]
 all-features = true
 
-[target.'cfg(not(windows))'.dependencies]
+# [target.'cfg(not(any(windows, target_os = "wasi")))'.dependencies]
+[target.'cfg(all(not(windows), not(target_os = "wasi")))'.dependencies]
 libc.workspace = true
 
 [target.'cfg(all(target_os = "linux", any(target_arch = "aarch64", target_arch = "arm", target_arch = "riscv64", target_arch = "x86_64")))'.dependencies]
 rustix = { workspace = true, features = ["stdio"] }
 syscalls.workspace = true
+
+[target.'cfg(target_os = "wasi")'.dependencies]
+rustix = { workspace = true, features = ["stdio"] }
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { workspace = true, features = [
@@ -34,7 +38,6 @@ windows-sys = { workspace = true, features = [
 ] }
 
 [build-dependencies]
-compact_str.workspace = true
 testutils = { workspace = true, features = [
     "const_str",
     "std",

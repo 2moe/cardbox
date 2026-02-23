@@ -1,5 +1,7 @@
-#![no_std]
-#![no_main]
+// #![no_std]
+// #![no_main]
+#![cfg_attr(not(target_os = "wasi"), no_std, no_main)]
+// ====
 #![allow(internal_features)]
 #![feature(core_intrinsics)]
 #![cfg_attr(windows, windows_subsystem = "console")]
@@ -37,6 +39,7 @@ pub unsafe fn mainCRTStartup() -> ! {
   ExitProcess(2)
 }
 
+#[cfg(not(target_os = "wasi"))]
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
   core::intrinsics::abort()
@@ -77,6 +80,7 @@ pub extern "C" fn _start() -> ! {
 }
 
 #[cfg(not(windows))]
+#[cfg(not(target_os = "wasi"))]
 #[cfg(not(target_os = "linux"))]
 #[unsafe(no_mangle)]
 pub extern "C" fn main() -> core::ffi::c_int {
@@ -86,4 +90,13 @@ pub extern "C" fn main() -> core::ffi::c_int {
 
   unsafe { write(STDOUT_FILENO, BUF.as_ptr() as _, BUF.len()) };
   0
+}
+
+/// build command:
+///   RUSTFLAGS='-Zunstable-options -Cpanic=immediate-abort'
+///   cargo b --profile fat --target=wasm32-wasip1 -Zbuild-std=std,panic_abort
+#[cfg(target_os = "wasi")]
+fn main() {
+  let out = unsafe { rustix::stdio::stdout() };
+  let _ = rustix::io::write(out, MSG.as_bytes());
 }

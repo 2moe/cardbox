@@ -28,7 +28,6 @@ dependencies = [
 name = "cardbox-target"
 version = "0.0.0"
 dependencies = [
- "compact_str",
  "libc",
  "rustix",
  "syscalls",
