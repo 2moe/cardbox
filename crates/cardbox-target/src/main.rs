@@ -19,9 +19,9 @@ use windows_sys::Win32::{
 
 #[cfg(windows)]
 #[allow(non_snake_case)]
-#[unsafe(no_mangle)]
 #[allow(unsafe_op_in_unsafe_fn)]
-pub unsafe fn mainCRTStartup() -> ! {
+#[unsafe(no_mangle)]
+unsafe extern "C" fn mainCRTStartup() -> ! {
   let console = GetStdHandle(STD_OUTPUT_HANDLE);
   let mut written = 0;
 
@@ -53,7 +53,7 @@ fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
   target_arch = "x86_64",
 ))]
 #[unsafe(no_mangle)]
-pub extern "C" fn _start() {
+extern "C" fn _start() {
   use syscalls::{Sysno, syscall1};
   let out = unsafe { rustix::stdio::stdout() };
   let _ = rustix::io::write(out, MSG.as_bytes());
@@ -68,7 +68,7 @@ pub extern "C" fn _start() {
   target_arch = "x86_64",
 )))]
 #[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
+extern "C" fn _start() -> ! {
   use libc::{_exit, STDOUT_FILENO, write};
 
   const BUF: &[u8] = MSG.as_bytes();
@@ -83,7 +83,7 @@ pub extern "C" fn _start() -> ! {
 #[cfg(not(target_os = "wasi"))]
 #[cfg(not(target_os = "linux"))]
 #[unsafe(no_mangle)]
-pub extern "C" fn main() -> core::ffi::c_int {
+extern "C" fn main() -> core::ffi::c_int {
   use libc::{STDOUT_FILENO, write};
 
   const BUF: &[u8] = MSG.as_bytes();
@@ -95,6 +95,10 @@ pub extern "C" fn main() -> core::ffi::c_int {
 /// build command:
 ///   RUSTFLAGS='-Zunstable-options -Cpanic=immediate-abort'
 ///   cargo b --profile fat --target=wasm32-wasip1 -Zbuild-std=std,panic_abort
+///
+/// wasm file size (rustc 1.95.0-nightly 2026-02-21):
+///   - wasip1: 3800B (3.8K)
+///   - wasip2: 24869B  (25K)
 #[cfg(target_os = "wasi")]
 fn main() {
   let out = unsafe { rustix::stdio::stdout() };

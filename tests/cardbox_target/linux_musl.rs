@@ -141,7 +141,7 @@ fn build_all_tested() -> io::Result<()> {
   loong64()?;
   s390x()?;
   sh4()?;
-  rv32()?;
+  rv32gc()?;
   // i586()?;
   mips32_le()?;
   microblaze()?;
@@ -177,12 +177,11 @@ fn sh4() -> io::Result<()> {
 
 #[ignore]
 #[test]
-fn rv32() -> io::Result<()> {
+fn rv32gc() -> io::Result<()> {
   let cross = "riscv32-unknown-linux-musl";
-  // RustcTarget::riscv32gc_unknown_linux_musl
-  //     .as_str()
-  //     .pipe(|r| linux_musl(r, cross.into()))
-  linux_musl_cross(cross)
+  RustcTarget::riscv32gc_unknown_linux_musl
+    .as_str()
+    .pipe(|r| linux_musl(r, cross.into()))
 }
 
 #[ignore]

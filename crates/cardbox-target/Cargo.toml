@@ -44,5 +44,5 @@ testutils = { workspace = true, features = [
     "re_exports_tap",
 ] }
 
-[dev-dependencies]
-testutils = { workspace = true, default-features = true }
+# [dev-dependencies]
+# testutils = { workspace = true, default-features = true }
