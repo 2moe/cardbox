@@ -1,0 +1,9 @@
+{
+  "$schema": "./build.schema.json",
+  "enabled_wasi": true,
+  // "enabled_bsd": true,
+  // "enabled_linux_musl": true,
+  // "enabled_linux_gnu": true,
+  // "enabled_mac": true,
+  // "enabled_win": true,
+}
