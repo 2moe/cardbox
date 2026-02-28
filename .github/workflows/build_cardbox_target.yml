@@ -74,7 +74,8 @@ jobs:
             matrix_hash = {
               include:
                 if invalid_matrix
-                  [{ target: (), os: "ubuntu-slim" }]
+                  # [{ target: (), os: "ubuntu-slim" }]
+                  []
                 else
                   matrix_arr
                 end
