@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
+      valid_matrix: ${{ steps.set_matrix.outputs.valid_matrix }}
     steps:
       - uses: ruby/setup-ruby@v1
         with:
@@ -55,7 +56,7 @@ jobs:
             { enabled: inputs.fetch("enabled_#{key}", false) }
           }
 
-          matrix_json =
+          matrix_hash =
             [
               { target: "wasi",       **get_input["wasi"] },
               { target: "linux-gnu",  **get_input["linux_gnu"] },
@@ -69,14 +70,23 @@ jobs:
             .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
             .compact
             .then { {include: _1} }
-            .then { JSON.dump _1 }
+
           file = ENV['github_output'.upcase]
-          value = "matrix=#{matrix_json}\n"
-          File.write(file, value, mode: "a")
+          append_output = -> value {
+            File.write(file, value + "\n", mode: "a")
+          }
+
+          if matrix_hash.empty?
+            append_output["valid_matrix=false"]
+            puts "Matrix is empty, exiting."
+            exit
+          end
+          append_output["valid_matrix=true"]
+          append_output["matrix=#{JSON.dump matrix_hash}"]
   build:
     needs:
       - prepare
-    if: toJson(needs.prepare.outputs.matrix) != '{}'
+    if: fromJson(needs.prepare.outputs.valid_matrix) || false
     strategy:
       # max-parallel: 2
       fail-fast: true
