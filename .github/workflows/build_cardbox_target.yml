@@ -11,7 +11,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/build_cardbox_target.yml
+      # - .github/workflows/build_cardbox_target.yml
       - .github/_ci_/cardox_target/dockerfile
   workflow_dispatch:
     inputs:
@@ -90,7 +90,7 @@ jobs:
           path: |
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
+            ~/.cargo/git/
             target/
           key: ${{env._cargo_crate_name}}-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
 
