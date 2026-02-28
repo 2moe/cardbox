@@ -69,19 +69,8 @@ jobs:
             .map    { _1.tap {|h| h.delete :enabled} }
             .tap(&:compact!)
 
-            invalid_matrix = matrix_arr.empty?
-
-            matrix_hash = {
-              include:
-                if invalid_matrix
-                  # [{ target: (), os: "ubuntu-slim" }]
-                  []
-                else
-                  matrix_arr
-                end
-            }
-
-          pp matrix_hash
+          invalid_matrix = matrix_arr.empty?
+          matrix_hash = { include: matrix_arr }.tap { pp _1 }
 
           file = ENV['github_output'.upcase]
           append_output = -> value {
@@ -92,7 +81,7 @@ jobs:
   build:
     needs:
       - prepare
-    # String, not boolean
+    # String, not bool
     if: needs.prepare.outputs.invalid_matrix == 'false'
     strategy:
       # max-parallel: 2
