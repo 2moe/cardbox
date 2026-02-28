@@ -56,14 +56,20 @@ jobs:
       - id: set_matrix
         shell: ruby -rjson {0}
         run: | #.#
-          matrix_json = [
-            { target: "wasi",       enabled: ${{inputs.enabled_wasi}} },
-            { target: "linux-gnu", enabled: ${{inputs.enabled_linux_gnu}} },
-            { target: "linux-musl",enabled: ${{inputs.enabled_linux_musl}} },
-            { target: "bsd",        enabled: ${{inputs.enabled_bsd}} },
-            { target: "win",        os: "windows-latest", enabled: ${{inputs.enabled_win}} },
-            { target: "mac",        os: "macos-latest",   enabled: ${{inputs.enabled_mac}} },
-          ] .select { |t| t[:enabled] }
+          inputs = '${{ toJSON(inputs) }}'
+            # .then { |s| s.strip.empty? ? '{}' : s }
+            .then { JSON.parse _1 }
+
+          matrix_json =
+            [
+              { target: "wasi",       enabled: inputs.fetch("enabled_wasi", true) },
+              { target: "linux-gnu",  enabled: inputs.fetch("enabled_linux_gnu", false) },
+              { target: "linux-musl", enabled: inputs.fetch("enabled_linux_musl", false) },
+              { target: "bsd",        enabled: inputs.fetch("enabled_bsd", false) },
+              { target: "win", os: "windows-latest", enabled: inputs.fetch("enabled_win", false) },
+              { target: "mac", os: "macos-latest", enabled: inputs.fetch("enabled_mac", false) },
+            ]
+            .select { |t| t[:enabled] }
             .map    { |h| h.delete_if { |k, _| k == :enabled } }
             .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
             .compact
