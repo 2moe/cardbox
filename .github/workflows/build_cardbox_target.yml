@@ -49,6 +49,10 @@ jobs:
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0'
+
       - id: set_matrix
         shell: ruby -rjson {0}
         run: | #.#
