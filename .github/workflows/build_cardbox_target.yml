@@ -1,0 +1,119 @@
+name: Build Cardbox Target
+env:
+  # BUILDKIT_PROGRESS: plain
+  cargo_crate_name: cardbox-target
+  using_get_command_json: "require_ci 'cardbox_target/get_command.rb'"
+  panic_abort_flags: "-Zunstable-options -Cpanic=immediate-abort"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build_cardbox_target.yml
+      - .github/_ci_/cardox_target/dockerfile
+  workflow_dispatch:
+    inputs:
+      enabled_win:
+        description: "Windows"
+        type: boolean
+        default: true
+      enabled_mac:
+        description: "macOS"
+        type: boolean
+        default: true
+      enabled_wasi:
+        description: "WebAssembly System Interface"
+        type: boolean
+        default: true
+      enabled_linux_gnu:
+        description: "Linux Glibc"
+        type: boolean
+        default: true
+      enabled_bsd:
+        description: "FreeBSD + OpenBSD + NetBSD + .."
+        type: boolean
+        default: false
+      enabled_linux_musl:
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    shell: ruby --disable=gems cinnabar/ci.rb {0}
+
+jobs:
+  build:
+    strategy:
+      # max-parallel: 2
+      fail-fast: true
+      matrix:
+        include:
+          - target: wasi
+          - target: linux-gnu
+          - target: linux-musl
+          - target: bsd
+          - target: win
+            os: windows-latest
+          - target: mac
+            os: macos-latest
+    runs-on: ${{matrix.os || 'ubuntu-latest'}}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: clone cinnabar
+        uses: actions/checkout@v6
+        with:
+          repository: 2moe/cinnabar
+          path: cinnabar
+          ref: v0.0.9-alpha.0
+
+      - name: build wasi
+        if: matrix.target == 'wasi' && inputs.enabled_wasi
+        env:
+          RUSTFLAGS: ${{env.panic_abort_flags}}
+        run: | #.#
+          ${{env.using_get_command_json}}
+
+          get_command("wasi_targets").each do |target|
+            %w[rustup target add].push(target).run_cmd
+          end
+          get_command("build_wasi_arrs").each(&:run_cmd)
+
+      - name: build linux gnu
+        if: matrix.target == 'linux-gnu' && inputs.enabled_linux_gnu
+        run: | #.#
+          ${{env.using_get_command_json}}
+          get_command("build_linux_gnu").run_cmd
+
+      - name: build linux musl
+        if: matrix.target == 'linux-musl' && inputs.enabled_linux_musl
+        run: | #.#
+          ${{env.using_get_command_json}}
+          get_command("build_linux_musl").run_cmd
+
+      - name: zig build
+        if: matrix.target == 'bsd' && inputs.enabled_bsd
+        run: | #.#
+          ${{env.using_get_command_json}}
+          get_command("zig_build").run_cmd
+
+      - name: build win bin
+        if: matrix.target == 'win' && inputs.enabled_win
+        run: | #.#
+          ${{env.using_get_command_json}}
+
+          get_command("win_targets").each do |target|
+            %w[rustup target add].push(target).run_cmd
+          end
+          get_command("build_win_arrs").each(&:run_cmd)
+
+      - name: build macOS bin
+        if: matrix.target == 'mac' && inputs.enabled_win
+        run: | #.#
+          ${{env.using_get_command_json}}
+
+          get_command("mac_targets").each do |target|
+            %w[rustup target add].push(target).run_cmd
+          end
+          get_command("build_mac_arrs").each(&:run_cmd)

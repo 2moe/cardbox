@@ -531,7 +531,17 @@ fn linux() -> io::Result<()> {
 //     .build()
 // }
 
-// ===  ===
+#[ignore]
+#[test]
+fn build_all_tested() -> io::Result<()> {
+  openbsd()?;
+  netbsd()?;
+  freebsd()?;
+  linux()?;
+  Ok(())
+}
+
+// ========
 #[ignore]
 #[test]
 fn openbsd_arm64() -> io::Result<()> {
