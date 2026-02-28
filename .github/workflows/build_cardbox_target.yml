@@ -51,15 +51,18 @@ jobs:
         shell: ruby -rjson {0}
         run: | #.#
           inputs = JSON.parse '${{ toJSON(inputs) }}'
+          get_input = -> key {
+            { enabled: inputs.fetch("enabled_#{key}", false) }
+          }
 
           matrix_json =
             [
-              { target: "wasi",       enabled: inputs.fetch("enabled_wasi", false) },
-              { target: "linux-gnu",  enabled: inputs.fetch("enabled_linux_gnu", false) },
-              { target: "linux-musl", enabled: inputs.fetch("enabled_linux_musl", false) },
-              { target: "bsd",        enabled: inputs.fetch("enabled_bsd", false) },
-              { target: "win", os: "windows-latest", enabled: inputs.fetch("enabled_win", false) },
-              { target: "mac", os: "macos-latest", enabled: inputs.fetch("enabled_mac", false) },
+              { target: "wasi",       **get_input["wasi"] },
+              { target: "linux-gnu",  **get_input["linux_gnu"] },
+              { target: "linux-musl", **get_input["linux_musl"] },
+              { target: "bsd",        **get_input["bsd"] },
+              { target: "win", os: "windows-latest", **get_input["win"] },
+              { target: "mac", os: "macos-latest", **get_input["mac"] },
             ]
             .select { |t| t[:enabled] }
             .map    { |h| h.delete_if { |k, _| k == :enabled } }
@@ -70,10 +73,10 @@ jobs:
           file = ENV['github_output'.upcase]
           value = "matrix=#{matrix_json}\n"
           File.write(file, value, mode: "a")
-
   build:
     needs:
       - prepare
+    if: needs.prepare.outputs.matrix != '{}'
     strategy:
       # max-parallel: 2
       fail-fast: true
