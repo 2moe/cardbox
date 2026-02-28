@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
-      valid_matrix: ${{ steps.set_matrix.outputs.valid_matrix }}
+      # valid_matrix: ${{ steps.set_matrix.outputs.valid_matrix }}
     steps:
       - uses: ruby/setup-ruby@v1
         with:
@@ -50,6 +50,7 @@ jobs:
 
       - id: set_matrix
         shell: ruby -rjson {0}
+        continue-on-error: true
         run: | #.#
           inputs = JSON.parse '${{ toJSON(inputs) }}'
           get_input = -> key {
@@ -70,24 +71,17 @@ jobs:
             .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
             .compact
             .then { {include: _1} }
+          exit 1 if matrix_hash.empty?
 
           file = ENV['github_output'.upcase]
           append_output = -> value {
             File.write(file, value + "\n", mode: "a")
           }
-
-          if matrix_hash.empty?
-            append_output["valid_matrix=false"]
-            puts "Matrix is empty, exiting."
-            exit
-          end
-          append_output["valid_matrix=true"]
           append_output["matrix=#{JSON.dump matrix_hash}"]
   build:
     needs:
       - prepare
-    # The output(valid_matrix) is string, not boolean
-    if: (needs.prepare.outputs.valid_matrix || '') == 'true'
+    if: needs.prepare.result == 'success'
     strategy:
       # max-parallel: 2
       fail-fast: true
