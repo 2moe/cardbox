@@ -64,9 +64,9 @@ jobs:
               { target: "win", os: "windows-latest", **get_input["win"] },
               { target: "mac", os: "macos-latest", **get_input["mac"] },
             ]
-            .select { |t| t[:enabled] }
-            .map    { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
-            .map    { |h| h.delete_if { |k, _| k == :enabled } }
+            .filter { _1[:enabled] }
+            .map    { _1.tap {|h| h.merge!(os: "ubuntu-latest") if h[:os].nil? } }
+            .map    { _1.tap {|h| h.delete :enabled} }
             .tap(&:compact!)
 
             invalid_matrix = matrix_arr.empty?
