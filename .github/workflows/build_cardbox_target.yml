@@ -2,6 +2,7 @@ name: Build Cardbox Target
 env:
   # BUILDKIT_PROGRESS: plain
   cargo_crate_name: cardbox-target
+  add_nightly_toolchain: "%w[rustup toolchain install nightly --component rust-src].run_cmd"
   using_get_command_json: "require_ci 'cardbox_target/get_command.rb'"
   panic_abort_flags: "-Zunstable-options -Cpanic=immediate-abort"
 
@@ -43,21 +44,39 @@ defaults:
     shell: ruby --disable=gems cinnabar/ci.rb {0}
 
 jobs:
+  prepare:
+    runs-on: ubuntu-slim
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+    steps:
+      - id: set_matrix
+        shell: ruby -rjson {0}
+        run: | #.#
+          matrix_json = [
+            { target: "wasi",       enabled: ${{inputs.enabled_wasi}} },
+            { target: "linux-gnu", enabled: ${{inputs.enabled_linux_gnu}} },
+            { target: "linux-musl",enabled: ${{inputs.enabled_linux_musl}} },
+            { target: "bsd",        enabled: ${{inputs.enabled_bsd}} },
+            { target: "win",        os: "windows-latest", enabled: ${{inputs.enabled_win}} },
+            { target: "mac",        os: "macos-latest",   enabled: ${{inputs.enabled_mac}} },
+          ] .select { |t| t[:enabled] }
+            .map    { |h| h.delete_if { |k, _| k == :enabled } }
+            .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
+            .compact
+            .then { {include: _1} }
+            .then { JSON.dump _1 }
+          file = ENV['github_output'.upcase]
+          value = "matrix=#{matrix_json}\n"
+          File.write(file, value, mode: "a")
+
   build:
+    needs:
+      - prepare
     strategy:
       # max-parallel: 2
       fail-fast: true
-      matrix:
-        include:
-          - target: wasi
-          - target: linux-gnu
-          - target: linux-musl
-          - target: bsd
-          - target: win
-            os: windows-latest
-          - target: mac
-            os: macos-latest
-    runs-on: ${{matrix.os || 'ubuntu-latest'}}
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v6
 
@@ -69,7 +88,7 @@ jobs:
           ref: v0.0.9-alpha.0
 
       - name: build wasi
-        if: matrix.target == 'wasi' && inputs.enabled_wasi
+        if: matrix.target == 'wasi'
         env:
           RUSTFLAGS: ${{env.panic_abort_flags}}
         run: | #.#
@@ -81,25 +100,26 @@ jobs:
           get_command("build_wasi_arrs").each(&:run_cmd)
 
       - name: build linux gnu
-        if: matrix.target == 'linux-gnu' && inputs.enabled_linux_gnu
+        if: matrix.target == 'linux-gnu'
         run: | #.#
           ${{env.using_get_command_json}}
           get_command("build_linux_gnu").run_cmd
 
       - name: build linux musl
-        if: matrix.target == 'linux-musl' && inputs.enabled_linux_musl
+        if: matrix.target == 'linux-musl'
         run: | #.#
           ${{env.using_get_command_json}}
           get_command("build_linux_musl").run_cmd
 
       - name: zig build
-        if: matrix.target == 'bsd' && inputs.enabled_bsd
+        if: matrix.target == 'bsd'
         run: | #.#
+          ${{env.add_nightly_toolchain}}
           ${{env.using_get_command_json}}
           get_command("zig_build").run_cmd
 
       - name: build win bin
-        if: matrix.target == 'win' && inputs.enabled_win
+        if: matrix.target == 'win'
         run: | #.#
           ${{env.using_get_command_json}}
 
@@ -109,7 +129,7 @@ jobs:
           get_command("build_win_arrs").each(&:run_cmd)
 
       - name: build macOS bin
-        if: matrix.target == 'mac' && inputs.enabled_win
+        if: matrix.target == 'mac'
         run: | #.#
           ${{env.using_get_command_json}}
 

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "enabled_win": {
+      "type": "boolean",
+      "examples": [true]
+    },
+    "enabled_mac": {
+      "type": "boolean",
+      "examples": [true]
+    },
+    "enabled_wasi": {
+      "type": "boolean",
+      "examples": [true]
+    },
+    "enabled_linux_gnu": {
+      "type": "boolean",
+      "examples": [true]
+    },
+    "enabled_bsd": {
+      "type": "boolean",
+      "examples": [true]
+    },
+    "enabled_linux_musl": {
+      "type": "boolean",
+      "examples": [true]
+    }
+  },
+  "required": [],
+  "additionalProperties": true,
+  "title": "The inputs of build_cardbox_target.yml"
+}
