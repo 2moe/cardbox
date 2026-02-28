@@ -70,8 +70,9 @@ jobs:
             .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
             .map    { |h| h.delete_if { |k, _| k == :enabled } }
             .compact
+            .tap { exit 1 if _1.empty? }
             .then { {include: _1} }
-          exit 1 if matrix_hash.empty?
+
           pp matrix_hash
 
           file = ENV['github_output'.upcase]
