@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # ===================================
 # Depends: ruby (>= 3.1)
-# RubyGems: cinnabar (>= 0.0.8)
+# RubyGems: cinnabar (>= 0.0.8), tomlrb (>= 2.0.4)
 # ===================================
 # frozen_string_literal: true
 
-require 'yaml'
+require 'tomlrb'
 require 'json'
 require 'cinnabar'
 using Cinnabar::Command::ArrRefin
@@ -14,8 +14,8 @@ workflow_yml = 'build_cardbox_target.yml'
 
 # json data
 stdin_data = File
-  .expand_path('build.jsonc', __dir__)
-  .then { YAML.safe_load_file _1 }
+  .expand_path('build.toml', __dir__)
+  .then { Tomlrb.load_file _1 }
   .except('$schema') # remove schema key
   .transform_values(&:to_s) # gh cli v2.87 requires JSON values to be Strings
   .then { JSON.dump _1 }

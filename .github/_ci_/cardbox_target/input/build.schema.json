@@ -4,10 +4,12 @@
   "properties": {
     "enabled_win": {
       "type": "boolean",
+      "description": "Windows",
       "examples": [true]
     },
     "enabled_mac": {
       "type": "boolean",
+      "description": "macOS",
       "examples": [true]
     },
     "enabled_wasi": {
