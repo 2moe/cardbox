@@ -18,26 +18,20 @@ on:
       enabled_win:
         description: "Windows"
         type: boolean
-        default: true
       enabled_mac:
         description: "macOS"
         type: boolean
-        default: true
       enabled_wasi:
         description: "WebAssembly System Interface"
         type: boolean
-        default: true
       enabled_linux_gnu:
         description: "Linux Glibc"
         type: boolean
-        default: true
       enabled_bsd:
         description: "FreeBSD + OpenBSD + NetBSD + .."
         type: boolean
-        default: false
       enabled_linux_musl:
         type: boolean
-        default: false
 
 defaults:
   run:
@@ -56,13 +50,11 @@ jobs:
       - id: set_matrix
         shell: ruby -rjson {0}
         run: | #.#
-          inputs = '${{ toJSON(inputs) }}'
-            # .then { |s| s.strip.empty? ? '{}' : s }
-            .then { JSON.parse _1 }
+          inputs = JSON.parse '${{ toJSON(inputs) }}'
 
           matrix_json =
             [
-              { target: "wasi",       enabled: inputs.fetch("enabled_wasi", true) },
+              { target: "wasi",       enabled: inputs.fetch("enabled_wasi", false) },
               { target: "linux-gnu",  enabled: inputs.fetch("enabled_linux_gnu", false) },
               { target: "linux-musl", enabled: inputs.fetch("enabled_linux_musl", false) },
               { target: "bsd",        enabled: inputs.fetch("enabled_bsd", false) },
@@ -89,6 +81,16 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/cache@v5
+        with:
+          # ~/.cargo/bin/
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{env._cargo_crate_name}}-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: clone cinnabar
         uses: actions/checkout@v6
