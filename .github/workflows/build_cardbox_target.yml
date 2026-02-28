@@ -102,6 +102,7 @@ jobs:
         env:
           RUSTFLAGS: ${{env._panic_abort_flags}}
         run: | #.#
+          ${{env._add_rs_src_toolchain}}
           ${{env._using_get_command_json}}
 
           get_command("wasi_targets").each do |target|
@@ -124,7 +125,6 @@ jobs:
       - name: zig build
         if: matrix.target == 'bsd'
         run: | #.#
-          ${{env._add_rs_src_toolchain}}
           ${{env._using_get_command_json}}
           get_command("zig_build").run_cmd
 

@@ -2,5 +2,5 @@
   "$schema": "./build.schema.json",
   "enabled_win": true,
   "enabled_bsd": false,
-  "enabled_wasi": true
+  "enabled_wasi": false
 }
