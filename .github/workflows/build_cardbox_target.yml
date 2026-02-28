@@ -76,7 +76,7 @@ jobs:
   build:
     needs:
       - prepare
-    if: fromJSON(needs.prepare.outputs.matrix).include != ''
+    if: toJson(needs.prepare.outputs.matrix) != '{}'
     strategy:
       # max-parallel: 2
       fail-fast: true
