@@ -53,31 +53,24 @@ jobs:
         continue-on-error: true
         run: | #.#
           inputs = JSON.parse '${{ toJSON(inputs) }}'
-          get_input = -> key {
-            { enabled: inputs.fetch("enabled_#{key}", false) }
-          }
-          matrix_arr = [
-              { target: "wasi",       **get_input["wasi"] },
-              { target: "linux-gnu",  **get_input["linux_gnu"] },
-              { target: "linux-musl", **get_input["linux_musl"] },
-              { target: "bsd",        **get_input["bsd"] },
-              { target: "win", os: "windows-latest", **get_input["win"] },
-              { target: "mac", os: "macos-latest", **get_input["mac"] },
-            ]
-            .filter { _1[:enabled] }
-            .map    { _1.tap {|h| h.merge!(os: "ubuntu-latest") if h[:os].nil? } }
-            .map    { _1.tap {|h| h.delete :enabled} }
-            .tap(&:compact!)
 
-          invalid_matrix = matrix_arr.empty?
-          matrix_hash = { include: matrix_arr }.tap { pp _1 }
+          def runner_name(t) = {
+            win: "windows",
+            mac: "macos",
+          }.fetch(t.to_sym, "ubuntu") + "-latest"
+
+          matrix_arr = %w[wasi linux_gnu linux_musl bsd win mac].filter_map { |t|
+            inputs["enabled_#{t}"] && { target: t, os: runner_name(t) }
+          }
 
           file = ENV['github_output'.upcase]
-          append_output = -> value {
-            File.write(file, value + "\n", mode: "a")
-          }
-          append_output["invalid_matrix=#{invalid_matrix}"]
-          append_output["matrix=#{JSON.dump matrix_hash}"]
+          append_output = -> v { File.write(file, v + "\n", mode: "a") }
+          [
+            "invalid_matrix=#{matrix_arr.empty?}",
+            { include: matrix_arr }
+              .tap { pp _1 }
+              .then { "matrix=#{JSON.dump _1}" }
+          ].map(&append_output)
   build:
     needs:
       - prepare
@@ -122,13 +115,13 @@ jobs:
           get_command("build_wasi_arrs").each(&:run_cmd)
 
       - name: build linux gnu
-        if: matrix.target == 'linux-gnu'
+        if: matrix.target == 'linux_gnu'
         run: | #.#
           ${{env._using_get_command_json}}
           get_command("build_linux_gnu").run_cmd
 
       - name: build linux musl
-        if: matrix.target == 'linux-musl'
+        if: matrix.target == 'linux_musl'
         run: | #.#
           ${{env._using_get_command_json}}
           get_command("build_linux_musl").run_cmd
