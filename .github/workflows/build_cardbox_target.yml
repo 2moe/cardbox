@@ -67,11 +67,12 @@ jobs:
               { target: "mac", os: "macos-latest", **get_input["mac"] },
             ]
             .select { |t| t[:enabled] }
-            .map    { |h| h.delete_if { |k, _| k == :enabled } }
             .map   { |h| h.merge!(os: "ubuntu-latest") if h[:os].nil? }
+            .map    { |h| h.delete_if { |k, _| k == :enabled } }
             .compact
             .then { {include: _1} }
           exit 1 if matrix_hash.empty?
+          pp matrix_hash
 
           file = ENV['github_output'.upcase]
           append_output = -> value {
