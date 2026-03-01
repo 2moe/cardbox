@@ -38,7 +38,7 @@ fn ensure_elfkickers_installed() -> io::Result<()> {
   if !fs_exists(sstrip_bin())? {
     fs_exists("/usr/bin/apt")?.then_ok_or(io::Error::other(err))?;
 
-    // "sudo apt update".pipe(run_command)?;
+    "sudo apt update".pipe(run_command)?;
     "sudo apt install -y elfkickers".pipe(run_command)?
   }
 
