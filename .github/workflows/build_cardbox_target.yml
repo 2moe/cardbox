@@ -3,7 +3,7 @@ env:
   # BUILDKIT_PROGRESS: plain
   CINNABAR_CI_LIBS: '["cardbox_target/get_command.rb"]'
   _cargo_crate_name: cardbox-target
-  _add_rs_src_toolchain: "%w[rustup component add rust-src --toolchain nightly].run_cmd"
+  _add_rs_src_component: "%w[rustup component add rust-src --toolchain nightly].run_cmd"
   _panic_abort_flags: "-Zunstable-options -Cpanic=immediate-abort"
 
 on:
@@ -100,7 +100,7 @@ jobs:
         env:
           RUSTFLAGS: ${{env._panic_abort_flags}}
         run: | #.#
-          ${{env._add_rs_src_toolchain}}
+          ${{env._add_rs_src_component}}
 
           rustup_add "wasi_targets"
           get_command("build_wasi_arrs").each(&:run_cmd)
