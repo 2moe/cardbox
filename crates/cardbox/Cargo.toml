@@ -7,7 +7,7 @@ edition.workspace = true
 license.workspace = true
 # keywords.workspace = true
 # categories.workspace = true
-categories = ["os", "no-std"]
+categories = ["os"]
 
 repository.workspace = true
 rust-version.workspace = true
@@ -18,7 +18,6 @@ description = "A modern, modular, and cross-platform implementation of core syst
 
 [package.metadata.docs.rs]
 all-features = true
-rustdoc-args = ["--cfg", "__unstable_doc"]
 
 [features]
 default = ["alloc", "rustix"]

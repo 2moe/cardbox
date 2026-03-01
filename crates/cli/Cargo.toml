@@ -1,0 +1,30 @@
+[package]
+name = "cardbox-cli"
+version.workspace = true
+authors.workspace = true
+# readme = "./docs/Readme.md"
+edition.workspace = true
+license.workspace = true
+# keywords.workspace = true
+# categories = ["os"]
+categories.workspace = true
+
+repository.workspace = true
+rust-version.workspace = true
+description = "system CLI utilities."
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+# cardbox = ["dep:cardbox"]
+
+[dependencies]
+# cardbox.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+# windows-sys = { version = "0.61", features = [
+#     "Win32_System_Console",
+#     "Win32_System_IO",
+#     "Win32_Foundation",
+# ] }

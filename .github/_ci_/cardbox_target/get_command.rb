@@ -15,9 +15,14 @@ def get_command(key, raise_err: true)
     .tap { raise "command_arr is nil" if _1.nil? && raise_err }
 end
 
-# - key: str, e.g., "wasi_targets"
-def rustup_add(key)
-  get_command(key).each do |target|
-    %w[rustup target add].push(target).run_cmd
-  end
+# - v: key_or_value:
+#   - str, e.g., "wasi_targets"
+#   - Array, e.g., ["wasm32-wasip1"]
+def rustup_add(v)
+  case v
+    when Array
+      v
+    else
+      get_command(v)
+  end.each { |target| %w[rustup target add].push(target).run_cmd }
 end

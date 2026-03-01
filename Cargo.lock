@@ -25,6 +25,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "cardbox-cli"
+version = "0.0.0-alpha.0"
+
+[[package]]
 name = "cardbox-target"
 version = "0.0.1-beta.0"
 dependencies = [
