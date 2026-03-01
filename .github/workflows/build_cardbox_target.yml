@@ -1,18 +1,12 @@
 name: Build Cardbox Target
 env:
   # BUILDKIT_PROGRESS: plain
+  CINNABAR_CI_LIBS: '["cardbox_target/get_command.rb"]'
   _cargo_crate_name: cardbox-target
   _add_rs_src_toolchain: "%w[rustup component add rust-src --toolchain nightly].run_cmd"
-  _using_get_command_json: "require_ci 'cardbox_target/get_command.rb'"
   _panic_abort_flags: "-Zunstable-options -Cpanic=immediate-abort"
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      # - .github/workflows/build_cardbox_target.yml
-      - .github/_ci_/cardox_target/dockerfile
   workflow_dispatch:
     inputs:
       enabled_win:
@@ -99,7 +93,7 @@ jobs:
         with:
           repository: 2moe/cinnabar
           path: cinnabar
-          ref: v0.0.9-alpha.0
+          ref: v0.0.9-alpha.1
 
       - name: build wasi
         if: matrix.target == 'wasi'
@@ -107,47 +101,33 @@ jobs:
           RUSTFLAGS: ${{env._panic_abort_flags}}
         run: | #.#
           ${{env._add_rs_src_toolchain}}
-          ${{env._using_get_command_json}}
 
-          get_command("wasi_targets").each do |target|
-            %w[rustup target add].push(target).run_cmd
-          end
+          rustup_add "wasi_targets"
           get_command("build_wasi_arrs").each(&:run_cmd)
 
       - name: build linux gnu
         if: matrix.target == 'linux_gnu'
         run: | #.#
-          ${{env._using_get_command_json}}
           get_command("build_linux_gnu").run_cmd
 
       - name: build linux musl
         if: matrix.target == 'linux_musl'
         run: | #.#
-          ${{env._using_get_command_json}}
           get_command("build_linux_musl").run_cmd
 
       - name: zig build
         if: matrix.target == 'bsd'
         run: | #.#
-          ${{env._using_get_command_json}}
           get_command("zig_build").run_cmd
 
       - name: build win bin
         if: matrix.target == 'win'
         run: | #.#
-          ${{env._using_get_command_json}}
-
-          get_command("win_targets").each do |target|
-            %w[rustup target add].push(target).run_cmd
-          end
+          rustup_add "win_targets"
           get_command("build_win_arrs").each(&:run_cmd)
 
       - name: build macOS bin
         if: matrix.target == 'mac'
         run: | #.#
-          ${{env._using_get_command_json}}
-
-          get_command("mac_targets").each do |target|
-            %w[rustup target add].push(target).run_cmd
-          end
+          rustup_add "mac_targets"
           get_command("build_mac_arrs").each(&:run_cmd)
