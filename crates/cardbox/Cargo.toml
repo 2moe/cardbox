@@ -22,10 +22,9 @@ default = []
 std = ["log/std", "rustix?/std"]
 # === UNIX Like no_std ===
 rustix = ["dep:rustix"]
-linux_5_11 = ["rustix?/linux_5_11"]
 use_libc = ["rustix?/use-libc"]
-# =======
-fs = ["rustix?/fs"]
+rustix_fs = ["rustix?/fs"]
+# ===
 copy_all = ["std", "dep:fs_extra"]
 # list = []
 # cat = []

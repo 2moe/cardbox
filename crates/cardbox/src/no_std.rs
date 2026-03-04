@@ -1,10 +1,20 @@
+use std::io::IoSlice;
+
+use rustix::io;
+
 /// filesystem I/O api
-#[cfg(feature = "fs")]
+#[cfg(feature = "rustix_fs")]
 pub mod fs;
 
-pub mod common;
-
 pub mod consts;
+
+pub fn puts(buf: &[u8]) -> io::Result<usize> {
+  if buf.is_empty() {
+    return Ok(0);
+  }
+  let out = unsafe { rustix::stdio::take_stdout() };
+  io::writev(&out, &[buf, b"\n"].map(IoSlice::new))
+}
 
 #[cfg(test)]
 mod tests {
