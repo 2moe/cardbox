@@ -34,11 +34,17 @@ fn run_cardbox(rest_args: Option<&[String]>) -> io::Result<()> {
   // eprintln!("first: {first}, rest: {rest:?}");
 
   match first.as_ref() {
-    "-v" | "--version" => commands::display_version(),
-    "--list" => commands::list_all_commands(),
     #[cfg(feature = "serde")]
-    "--list-json" => commands::list_all_commands_json(),
+    "--version" => commands::display_version_in_json(),
+
+    "-V" => commands::display_version(),
+    "-L" => commands::list_all_commands(),
+
+    #[cfg(feature = "serde")]
+    "--list" => commands::list_all_commands_in_json(),
+
     "-h" | "--help" | "" => commands::help_info(),
+
     x if commands::all_available_commands().contains(&x) => {
       let rest_args = if rest.is_empty() { None } else { Some(rest) };
       parse_and_run_command(x, rest_args)
@@ -65,14 +71,9 @@ fn parse_and_run_command(
     //
     #[cfg(feature = "copy-all")]
     "copy-all" => copy_all(rest_args),
-    //
+    // target + uts-name
     #[cfg(feature = "target")]
     "target" => {
-      todo!()
-    }
-    //
-    #[cfg(feature = "uts-name")]
-    "uts-name" => {
       todo!()
     }
     //

@@ -22,8 +22,7 @@ serde = ["dep:serde_json"]
 argh = ["dep:argh"]
 compact_str = ["dep:compact_str"]
 # ===
-target = []
-uts-name = ["cardbox/uts_name"]
+target = ["cardbox/uts_name"]
 copy-file = []
 copy-all = ["cardbox/copy_all"]
 list = ["cardbox/list", "serde"]
@@ -41,3 +40,12 @@ cardbox = { workspace = true, features = ["std"] }
 argh = { workspace = true, optional = true }
 compact_str = { workspace = true, features = ["serde"], optional = true }
 serde_json = { workspace = true, optional = true }
+
+[build-dependencies]
+time = { workspace = true, features = ["formatting"] }
+serde_json.workspace = true
+testutils = { workspace = true, features = [
+  "const_str",
+  "os_cmd",
+  "re_exports_tap",
+] }

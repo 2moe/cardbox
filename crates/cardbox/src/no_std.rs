@@ -6,6 +6,8 @@ mod common;
 pub use common::puts;
 #[cfg(feature = "list")]
 pub use common::readable_unit;
+// === UNIX only ===
+#[cfg(unix)]
 #[cfg(feature = "uts_name")]
 pub use rustix::system::uname;
 // =========
