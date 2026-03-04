@@ -9,7 +9,7 @@ open-doc = [
     "doc",
     "--all-features",
     "--",
-    "build_and_open_rust_doc",
+    "build_and_serve_doc",
     "--exact",
     "--show-output",
     "--ignored",

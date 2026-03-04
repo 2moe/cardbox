@@ -4,7 +4,10 @@
 # CardBox
 */
 
-#[cfg(feature = "alloc")]
-extern crate alloc;
-
+// #[deprecated]
+#[cfg(not(windows))]
+#[cfg(feature = "rustix")]
 pub mod no_std;
+
+#[cfg(feature = "std")]
+pub mod imp_std;

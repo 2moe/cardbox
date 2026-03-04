@@ -2,8 +2,10 @@
 require 'json'
 
 # Decoded JSON Hash data memoization.
-class JsonData
-  def self.command
+module JsonData
+  module_function
+
+  def command
     @command_file ||= File.expand_path('command.json', __dir__)
     @command_hash ||= JSON.load_file(@command_file).freeze
     @command_hash

@@ -1,3 +1,11 @@
+/// filesystem I/O api
+#[cfg(feature = "fs")]
+pub mod fs;
+
+pub mod common;
+
+pub mod consts;
+
 #[cfg(test)]
 mod tests {
   use rustix::{fd::AsFd, io};

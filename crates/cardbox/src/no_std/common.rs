@@ -1,19 +1,18 @@
-#![allow(unused)]
+use std::io::IoSlice;
 
-pub(crate) const CARDBOX_VER: &str = env!("CARGO_PKG_VERSION");
+use rustix::io;
 
-pub fn readable_unit(bytes: i64) -> (i64, &'static str) {
-  // It's interesting to note that using the f32/f64 types here results in a 20K
-  // larger binary file.
-  ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
-    .iter()
-    .enumerate()
-    .map(|(i, &unit)| (bytes / 1024_i64.pow(i as _), unit))
-    .take_while(|(size, _)| *size >= 1)
-    .last()
-    .unwrap_or((bytes, "B"))
-}
+// pub const fn yes() -> bool {
+//   true
+// }
+// pub const fn no() -> bool {
+//   false
+// }
 
-pub(crate) const fn yes() -> bool {
-  true
+pub fn puts(buf: &[u8]) -> io::Result<usize> {
+  if buf.is_empty() {
+    return Ok(0);
+  }
+  let out = unsafe { rustix::stdio::take_stdout() };
+  io::writev(&out, &[buf, b"\n"].map(IoSlice::new))
 }

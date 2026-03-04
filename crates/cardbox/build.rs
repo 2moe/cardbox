@@ -3,20 +3,24 @@ use std::{
   io::{self, Write},
 };
 
-use compact_str::{CompactString as MiniStr, format_compact as fmt_compact};
+use testutils::cargo_cfg;
 
 fn main() {
   set_target_envs().expect("Failed to set envs")
 }
 
 fn set_target_envs() -> io::Result<()> {
-  let target_vars = ["FAMILY", "OS", "ARCH", "POINTER_WIDTH", "ENDIAN", "FEATURE"]
-    .iter()
-    .map(|name| (name, fmt_compact!("CARGO_CFG_TARGET_{name}")));
-
-  let direct_vars = ["TARGET", "PROFILE", "CARGO_ENCODED_RUSTFLAGS"]
-    .iter()
-    .map(|name| (name, MiniStr::const_new(name)));
+  let env_vars = [
+    ("family", cargo_cfg!(target_family)),
+    ("os", cargo_cfg!(target_os)),
+    ("arch", cargo_cfg!(target_arch)),
+    ("pointer_width", cargo_cfg!(target_pointer_width)),
+    ("endian", cargo_cfg!(target_endian)),
+    ("feature", cargo_cfg!(feature)),
+    ("target", env::var("TARGET")),
+    // ("profile", env::var("PROFILE")),
+    // ("rustflags", env::var("CARGO_ENCODED_RUSTFLAGS")),
+  ];
 
   let env_err = |e| {
     io::Error::other(format!(
@@ -27,13 +31,10 @@ fn set_target_envs() -> io::Result<()> {
 
   {
     let mut lock = io::stdout().lock();
-    target_vars
-      .chain(direct_vars)
-      .try_for_each(|(name, env_name)| {
-        let val = env::var(env_name.as_str()).map_err(env_err)?;
-        writeln!(&mut lock, "cargo::rustc-env=__CARDBOX_CFG_{name}={val}")
-      })?;
-
+    for (k, value) in env_vars {
+      let v = value.map_err(env_err)?;
+      writeln!(&mut lock, "cargo::rustc-env=__cardbox_cfg_{k}={v}")?;
+    }
     lock.flush()
   }
 }

@@ -17,14 +17,8 @@ description = "system CLI utilities."
 all-features = true
 
 [features]
-# cardbox = ["dep:cardbox"]
+default = []
+std = []
 
 [dependencies]
-# cardbox.workspace = true
-
-[target.'cfg(windows)'.dependencies]
-# windows-sys = { version = "0.61", features = [
-#     "Win32_System_Console",
-#     "Win32_System_IO",
-#     "Win32_Foundation",
-# ] }
+cardbox.workspace = true

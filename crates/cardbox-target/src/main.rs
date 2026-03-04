@@ -55,8 +55,8 @@ fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {
 #[unsafe(no_mangle)]
 extern "C" fn _start() {
   use syscalls::{Sysno, syscall1};
-  let out = unsafe { rustix::stdio::stdout() };
-  let _ = rustix::io::write(out, MSG.as_bytes());
+  let out = unsafe { rustix::stdio::take_stdout() };
+  let _ = rustix::io::write(&out, MSG.as_bytes());
   let _ = unsafe { syscall1(Sysno::exit, 0) };
 }
 
@@ -101,6 +101,6 @@ extern "C" fn main() -> core::ffi::c_int {
 ///   - wasip2: 24869B  (25K)
 #[cfg(target_os = "wasi")]
 fn main() {
-  let out = unsafe { rustix::stdio::stdout() };
-  let _ = rustix::io::write(out, MSG.as_bytes());
+  let out = unsafe { rustix::stdio::take_stdout() };
+  let _ = rustix::io::write(&out, MSG.as_bytes());
 }
