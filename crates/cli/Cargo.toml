@@ -11,15 +11,24 @@ categories.workspace = true
 
 repository.workspace = true
 rust-version.workspace = true
-description = "system CLI utilities."
+description = "CLI utilities purpose-built for scratch container environments."
 
 [package.metadata.docs.rs]
 all-features = true
 
 [features]
 default = []
-std = []
-# list = []
+serde = ["dep:serde_json"]
+argh = ["dep:argh"]
+compact_str = ["dep:compact_str"]
+# ===
+target = []
+uts-name = ["cardbox/uts_name"]
+copy-file = []
+copy-all = ["cardbox/copy_all"]
+list = ["cardbox/list", "serde"]
+rename = []
+run-command = []
 # cat = []
 # hardlink = []
 # symlink = []
@@ -27,4 +36,8 @@ std = []
 # chmod = []
 
 [dependencies]
-cardbox.workspace = true
+tap.workspace = true
+cardbox = { workspace = true, features = ["std"] }
+argh = { workspace = true, optional = true }
+compact_str = { workspace = true, features = ["serde"], optional = true }
+serde_json = { workspace = true, optional = true }

@@ -3,6 +3,15 @@ use std::path::Path;
 pub use fs_extra;
 use fs_extra::dir::CopyOptions;
 
+/// Recursively copy an entire directory tree to a new location.
+///
+/// # Example
+///
+/// ```ignore
+/// use cardbox::imp_std::copy::copy_all;
+///
+/// copy_all("/tmp/source", "/tmp/dest", true).expect("copy failed");
+/// ```
 pub fn copy_all<P: AsRef<Path>, Q: AsRef<Path>>(
   from: P,
   to: Q,
