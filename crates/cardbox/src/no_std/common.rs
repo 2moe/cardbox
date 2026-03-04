@@ -1,3 +1,5 @@
+use rustix::{io, io::IoSlice};
+
 /// Converts a byte count into a human‑readable IEC unit (base‑1024).
 ///
 /// Uses the following binary units:
@@ -14,7 +16,7 @@
 /// # Example
 ///
 /// ```
-/// use cardbox::imp_std::common::readable_unit;
+/// use cardbox::no_std::readable_unit;
 ///
 /// assert_eq!(readable_unit(1023), (1023.0, "B"));
 /// assert_eq!(readable_unit(1024), (1.0, "KiB"));
@@ -25,6 +27,7 @@
 /// ```
 // It's interesting to note that using the f32/f64 types here results in a 20K
 // larger binary file.
+#[cfg(feature = "list")]
 pub fn readable_unit(bytes: i64) -> (f64, &'static str) {
   ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
     .iter()
@@ -33,4 +36,13 @@ pub fn readable_unit(bytes: i64) -> (f64, &'static str) {
     .take_while(|(size, _)| size.abs() >= 1.0)
     .last()
     .unwrap_or((bytes as _, "B"))
+}
+
+/// e.g., `puts(b"Hello")`
+pub fn puts(buf: &[u8]) -> io::Result<usize> {
+  if buf.is_empty() {
+    return Ok(0);
+  }
+  let out = rustix::stdio::stdout();
+  io::writev(out, &[buf, b"\n"].map(IoSlice::new))
 }

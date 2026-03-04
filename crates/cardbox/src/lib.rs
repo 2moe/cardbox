@@ -4,6 +4,8 @@
 # CardBox
 */
 
+pub mod consts;
+
 // #[deprecated]
 #[cfg(not(windows))]
 #[cfg(feature = "rustix")]

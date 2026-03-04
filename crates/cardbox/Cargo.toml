@@ -1,6 +1,7 @@
 [package]
 name = "cardbox"
-version.workspace = true
+# version.workspace = true
+version = "0.0.1-alpha.1"
 authors.workspace = true
 # readme = "./docs/Readme.md"
 edition.workspace = true
@@ -24,14 +25,11 @@ std = ["log/std", "rustix?/std"]
 rustix = ["dep:rustix"]
 use_libc = ["rustix?/use-libc"]
 rustix_fs = ["rustix?/fs"]
+uts_name = ["rustix?/system"]
 # ===
 copy_all = ["std", "dep:fs_extra"]
-# list = []
-# cat = []
-# hardlink = []
-# symlink = []
-# mkdir = []
-# chmod = []
+list = []
+
 
 [dependencies]
 fs_extra = { workspace = true, optional = true }

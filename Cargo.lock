@@ -16,7 +16,7 @@ checksum = "843867be96c8daad0d758b57df9392b6d8d271134fce549de6ce169ff98a92af"
 
 [[package]]
 name = "cardbox"
-version = "0.0.0-alpha.0"
+version = "0.0.1-alpha.1"
 dependencies = [
  "fs_extra",
  "libc",
@@ -27,7 +27,7 @@ dependencies = [
 
 [[package]]
 name = "cardbox-cli"
-version = "0.0.0-alpha.0"
+version = "0.0.0"
 dependencies = [
  "cardbox",
 ]
