@@ -38,7 +38,7 @@ Usage: cardbox [sub-command] [arguments]...
 
 e.g.,
   cardbox target
-  cardbox --list
+  cardbox --version
 
 Options:
   --V
@@ -128,4 +128,10 @@ pub(crate) fn list_all_commands_in_json() -> io::Result<()> {
   .pipe(puts)?;
 
   Ok(())
+}
+
+pub(crate) fn contains_help(args: &[String]) -> bool {
+  args
+    .iter()
+    .any(|x| ["-h", "help", "--help"].contains(&x.as_ref()))
 }

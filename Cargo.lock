@@ -53,6 +53,7 @@ dependencies = [
  "libc",
  "log",
  "rustix",
+ "tap",
  "testutils",
 ]
 

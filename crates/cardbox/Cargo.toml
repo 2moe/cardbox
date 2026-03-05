@@ -32,6 +32,7 @@ list = []
 
 
 [dependencies]
+tap.workspace = true
 fs_extra = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
 

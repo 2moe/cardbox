@@ -1,7 +1,7 @@
 use std::path::Path;
 
-pub use fs_extra;
 use fs_extra::dir::CopyOptions;
+pub mod copy_file;
 
 /// Recursively copy an entire directory tree to a new location.
 ///

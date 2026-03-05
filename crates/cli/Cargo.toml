@@ -19,10 +19,10 @@ all-features = true
 [features]
 default = []
 serde = ["dep:serde_json"]
-argh = ["dep:argh"]
-compact_str = ["dep:compact_str"]
+# argh = ["dep:argh"]
+# compact_str = ["dep:compact_str"]
 # ===
-target = ["cardbox/uts_name"]
+target = ["cardbox/uts_name", "cardbox/rustix"]
 copy-file = []
 copy-all = ["cardbox/copy_all"]
 list = ["cardbox/list", "serde"]

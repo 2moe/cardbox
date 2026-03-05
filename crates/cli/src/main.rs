@@ -60,6 +60,9 @@ fn run_cardbox(rest_args: Option<&[String]>) -> io::Result<()> {
 #[cfg(any(feature = "copy-file", feature = "copy-all"))]
 mod copy;
 
+#[cfg(feature = "target")]
+mod target_info;
+
 // ===================
 fn parse_and_run_command(
   program_stem: &str,
@@ -67,15 +70,13 @@ fn parse_and_run_command(
 ) -> io::Result<()> {
   match program_stem {
     #[cfg(feature = "copy-file")]
-    "copy-file" => copy::copy_file(rest_args),
+    "copy-file" => copy::copy_file::copy_file(rest_args),
     //
     #[cfg(feature = "copy-all")]
     "copy-all" => copy_all(rest_args),
     // target + uts-name
     #[cfg(feature = "target")]
-    "target" => {
-      todo!()
-    }
+    "target" => target_info::target_info(rest_args),
     //
     #[cfg(feature = "list")]
     "list" => {
