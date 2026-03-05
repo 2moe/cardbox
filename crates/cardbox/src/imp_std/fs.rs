@@ -23,12 +23,16 @@ use tap::Pipe;
 pub fn create_a_new_buf_writer<P: AsRef<Path>>(
   path: P,
 ) -> io::Result<BufWriter<File>> {
-  BufWriter::new(
-    File::options()
-      .create(true)
-      .write(true)
-      .truncate(true)
-      .open(path)?,
-  )
-  .pipe(Ok)
+  create_a_new_file(path)?
+    .pipe(BufWriter::new)
+    .pipe(Ok)
+}
+
+/// OpenOptions: create + write + truncate + open
+pub fn create_a_new_file<P: AsRef<Path>>(path: P) -> io::Result<File> {
+  File::options()
+    .create(true)
+    .write(true)
+    .truncate(true)
+    .open(path)
 }

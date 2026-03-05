@@ -1,5 +1,6 @@
 use std::{borrow::Cow, fs, io, path::Path};
 
+use rustix::stdio;
 use tap::Pipe;
 
 use crate::imp_std::fs::create_a_new_buf_writer;
@@ -47,15 +48,17 @@ pub fn create_dst_dir(dst_path: &Path) -> io::Result<()> {
 /// # Ok::<(), std::io::Error>(())
 /// ```
 pub fn copy_from_stdin_to_file(dst_path: &Path) -> io::Result<()> {
-  let mut dst = match dst_path.is_dir() {
+  let mut lock = io::stdin().lock();
+
+  match dst_path.is_dir() {
     true => dst_path
       .join("-")
       .pipe(Cow::from),
     _ => dst_path.into(),
   }
-  .pipe(create_a_new_buf_writer)?;
+  .pipe(create_a_new_buf_writer)?
+  .pipe_ref_mut(|dst| io::copy(&mut lock, dst))?;
 
-  io::copy(&mut io::stdin(), &mut dst)?;
   Ok(())
 }
 
@@ -83,11 +86,15 @@ pub fn io_invalid_input(s: &str) -> io::Error {
 /// copy_src_to_dst_file("Cargo.toml", Path::new("/tmp"))?;
 /// # Ok::<(), std::io::Error>(())
 /// ```
-pub fn copy_src_to_dst_file(src: &str, dst_path: &Path) -> io::Result<()> {
-  if src == "-" {
+pub fn copy_src_to_dst_file<S: AsRef<Path>, D: AsRef<Path>>(
+  src: S,
+  dst: D,
+  // is_src_stdin: bool,
+) -> io::Result<()> {
+  let (src_path, dst_path) = (src.as_ref(), dst.as_ref());
+  if src_path.eq("-") {
     return copy_from_stdin_to_file(dst_path);
   }
-  let src_path = Path::new(src);
 
   if src_path.is_dir() {
     "src is a directory, use `copy-all` instead of `copy-file`!"
@@ -104,7 +111,7 @@ pub fn copy_src_to_dst_file(src: &str, dst_path: &Path) -> io::Result<()> {
   let dst_path = resolve_dst_file_path(dst_path, src_path)
     .ok_or_else(|| io_invalid_input("Destination path should not be a directory"))?;
 
-  fs::copy(src, dst_path)?;
+  fs::copy(src_path, dst_path)?;
   Ok(())
 }
 

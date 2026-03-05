@@ -8,9 +8,6 @@ mod commands;
 use cardbox::imp_std::common::eprint;
 use tap::Pipe;
 
-#[cfg(feature = "copy-all")]
-use crate::copy::copy_all;
-
 fn main() -> io::Result<()> {
   let args = env::args().collect::<Vec<_>>();
 
@@ -70,10 +67,10 @@ fn parse_and_run_command(
 ) -> io::Result<()> {
   match program_stem {
     #[cfg(feature = "copy-file")]
-    "copy-file" => copy::copy_file::copy_file(rest_args),
+    "copy-file" => copy::copy_file::run(rest_args),
     //
     #[cfg(feature = "copy-all")]
-    "copy-all" => copy_all(rest_args),
+    "copy-all" => copy::copy_all::run(rest_args),
     // target + uts-name
     #[cfg(feature = "target")]
     "target" => target_info::target_info(rest_args),
