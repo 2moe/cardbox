@@ -39,6 +39,7 @@ unsafe extern "C" fn mainCRTStartup() -> ! {
   ExitProcess(2)
 }
 
+#[cfg(not(rust_analyzer))]
 #[cfg(not(target_os = "wasi"))]
 #[panic_handler]
 fn panic(_info: &core::panic::PanicInfo<'_>) -> ! {

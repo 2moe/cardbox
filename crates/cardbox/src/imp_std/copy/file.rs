@@ -1,9 +1,8 @@
 use std::{borrow::Cow, fs, io, path::Path};
 
-use rustix::stdio;
 use tap::Pipe;
 
-use crate::imp_std::fs::create_a_new_buf_writer;
+use crate::imp_std::{copy::error::io_invalid_input, fs::create_a_new_buf_writer};
 
 /// Ensure the destination directory exists.
 ///
@@ -20,7 +19,9 @@ use crate::imp_std::fs::create_a_new_buf_writer;
 /// create_dst_dir(Path::new("/tmp/deep/nested/file.txt"))?; // creates `/tmp/deep/nested`
 /// # Ok::<(), std::io::Error>(())
 /// ```
-pub fn create_dst_dir(dst_path: &Path) -> io::Result<()> {
+pub fn create_dst_dir<P: AsRef<Path>>(dst: P) -> io::Result<()> {
+  let dst_path = dst.as_ref();
+
   match dst_path.is_dir() {
     false => dst_path
       .parent()
@@ -62,10 +63,6 @@ pub fn copy_from_stdin_to_file(dst_path: &Path) -> io::Result<()> {
   Ok(())
 }
 
-pub fn io_invalid_input(s: &str) -> io::Error {
-  io::Error::new(io::ErrorKind::InvalidInput, s)
-}
-
 /// Copy a single file or stdin to the requested destination.
 ///
 /// - If `src` is `"-"`, data are read from **stdin** (see
@@ -80,19 +77,20 @@ pub fn io_invalid_input(s: &str) -> io::Error {
 /// use cardbox::imp_std::copy::copy_file::copy_src_to_dst_file;
 ///
 /// // Copy file into another name
-/// copy_src_to_dst_file("Cargo.toml", Path::new("/tmp/x.toml"))?;
+/// copy_src_to_dst_file("Cargo.toml", Path::new("/tmp/x.toml"), false)?;
 ///
 /// // Copy file into existing directory
-/// copy_src_to_dst_file("Cargo.toml", Path::new("/tmp"))?;
+/// copy_src_to_dst_file("Cargo.toml", Path::new("/tmp"), false)?;
 /// # Ok::<(), std::io::Error>(())
 /// ```
 pub fn copy_src_to_dst_file<S: AsRef<Path>, D: AsRef<Path>>(
   src: S,
   dst: D,
-  // is_src_stdin: bool,
+  check_stdin_in_src: bool,
 ) -> io::Result<()> {
   let (src_path, dst_path) = (src.as_ref(), dst.as_ref());
-  if src_path.eq("-") {
+
+  if check_stdin_in_src && src_path == "-" {
     return copy_from_stdin_to_file(dst_path);
   }
 
@@ -108,16 +106,36 @@ pub fn copy_src_to_dst_file<S: AsRef<Path>, D: AsRef<Path>>(
       .pipe(Err)?;
   }
 
-  let dst_path = resolve_dst_file_path(dst_path, src_path)
+  let dst_path = resolve_dst_file_path(src_path, dst_path)
     .ok_or_else(|| io_invalid_input("Destination path should not be a directory"))?;
 
   fs::copy(src_path, dst_path)?;
   Ok(())
 }
 
+/// Decide the final destination path for a single file copy.
+///
+/// - If `dst_path` is a directory => append the source file name to it.
+/// - _ => use `dst_path` as-is (it is already the final file path).
+///
+/// Returns `None` only when the source file name cannot be obtained
+/// (e.g., `src_path` ends with `..`).
+///
+/// # Example
+///
+/// ```
+///   use std::{borrow::Cow, path::Path};
+///   use cardbox::imp_std::copy::file::resolve_dst_file_path;
+///
+///   let src = Path::new("./crate/Cargo.toml");
+///   let dst = Path::new("/tmp");
+///   let final_path = Path::new("/tmp/Cargo.toml");
+///
+///   resolve_dst_file_path(src, dst).map(|v| assert_eq!(&v, final_path));
+/// ```
 pub fn resolve_dst_file_path<'a>(
-  dst_path: &'a Path,
   src_path: &'a Path,
+  dst_path: &'a Path,
 ) -> Option<Cow<'a, Path>> {
   match dst_path.is_dir() {
     true => src_path

@@ -47,9 +47,9 @@ anyhow.workspace = true
 testutils = { workspace = true, default-features = true }
 cardbox-target = { path = "./crates/cardbox-target" }
 
-# [workspace.lints.rust.unexpected_cfgs]
-# level = "warn"
-# check-cfg = ['cfg(__unstable_doc)']
+[workspace.lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ['cfg(rust_analyzer)']
 
 [profile.release]
 panic = "abort"

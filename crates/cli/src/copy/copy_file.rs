@@ -2,23 +2,24 @@ use std::{fs, io, path::Path};
 
 use cardbox::imp_std::{
   common::{eprint, eputs},
-  copy::file::{
-    copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir, io_invalid_input,
+  copy::{
+    error::reject_non_dir_dst_for_multi_files,
+    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
   },
+  path::{eputs_path, split_last_path},
 };
 use tap::Pipe;
 
-use crate::{
-  commands::contains_help,
-  copy::{eputs_path, split_last_path},
-};
+use crate::commands::contains_help;
 
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   use display_copy_file_help as help;
 
-  // args.is_empty()
-  let Some(args) = args else {
-    return help();
+  // args is_empty() or None => help()
+  let args = match args {
+    Some(&[]) => return help(),
+    Some(x) => x,
+    _ => return help(),
   };
   if contains_help(args) {
     return help();
@@ -32,23 +33,19 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
     return copy_from_stdin_to_file(dst_path);
   }
   if src_strs.len() == 1 {
-    return copy_src_to_dst_file(&src_strs[0], dst_path);
+    return copy_src_to_dst_file(&src_strs[0], dst_path, true);
   }
 
-  if dst_path.exists() && !dst_path.is_dir() {
-    r#"
-    args.len() >= 3;
-    Destination path is not a directory.
-
-    Sorry! This function does not support the concatenation of
-    multiple files into a single file.
-
-    Instead, it supports copying multiple files to a directory.
-    Please provide a valid directory path."#
-      .pipe(io_invalid_input)
-      .pipe(Err)?;
-  }
+  // === args.len() >= 3 ===
+  reject_non_dir_dst_for_multi_files(dst_path)?;
   fs::create_dir_all(dst_path)?;
+  copy_all_files_to_dir(src_strs, dst_path)?;
+  Ok(())
+}
+
+fn copy_all_files_to_dir(src_strs: &[String], dst_path: &Path) -> io::Result<()> {
+  // Allow one occurrence of stdin, but not two or more.
+  let mut stdin_found = false;
 
   for src in src_strs.iter().map(Path::new) {
     if src.is_dir() {
@@ -57,8 +54,16 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
       continue;
     }
 
+    let res = match stdin_found {
+      false if src == "-" => {
+        stdin_found = true;
+        copy_from_stdin_to_file(dst_path)
+      }
+      _ => copy_src_to_dst_file(src, dst_path, false),
+    };
+
     // ignore Error
-    if let Err(e) = copy_src_to_dst_file(src, dst_path) {
+    if let Err(e) = res {
       eprint("[WARN] Skipping invalid destination file: ")?;
       eputs_path(dst_path)?;
       eputs(e.to_string())?;

@@ -1,24 +1,31 @@
 use std::{fs, io, path::Path};
 
-use cardbox::imp_std::copy::{
-  extra::{copy_all as fs_copy_all, cp_file_options, fs_extra},
-  file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
+use cardbox::imp_std::{
+  common::puts,
+  copy::{
+    error::reject_non_dir_dst_for_multi_files,
+    extra::copy_all as fs_copy_all,
+    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
+  },
+  path::split_last_path,
 };
 use tap::Pipe;
 
-use crate::{commands::contains_help, copy::split_last_path};
+use crate::commands::contains_help;
 
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   use display_copy_all_help as help;
 
-  let Some(args) = args else {
-    return help();
+  // args is_empty() or None => help()
+  let args = match args {
+    Some(&[]) => return help(),
+    Some(x) => x,
+    _ => return help(),
   };
   if contains_help(args) {
     return help();
   }
 
-  // cardbox::imp_std::copy::copy_all(from, to, overwrite);
   let (dst_path, src_strs) = split_last_path(args);
 
   create_dst_dir(dst_path)?;
@@ -28,45 +35,45 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   }
 
   if src_strs.len() == 1 {
-    let src = &src_strs[0];
-    let src_path = Path::new(src);
-    if !src_path.is_dir() {
-      return copy_src_to_dst_file(src, dst_path);
-    }
-    fs_copy_all(src_path, dst_path).map_err(io::Error::other)?;
-    return Ok(());
+    return match Path::new(&src_strs[0]) {
+      src if src.is_dir() => fs_copy_all(src, dst_path)
+        .map_err(io::Error::other)
+        .map(|_| ()),
+      src => copy_src_to_dst_file(src, dst_path, true),
+    };
   }
 
   // === args.len() >= 3 ===
+  reject_non_dir_dst_for_multi_files(dst_path)?;
+  copy_multi_paths_to_dst(src_strs, dst_path)?;
+  Ok(())
+}
 
+fn copy_multi_paths_to_dst(src_strs: &[String], dst_path: &Path) -> io::Result<()> {
   // zh: 允许出现一次 stdin， 不允许出现两次。
   // en: Allow one occurrence of stdin, but not two or more.
   let mut stdin_found = false;
+
   for src in src_strs.iter().map(Path::new) {
     if src.is_dir() {
       fs_copy_all(src, dst_path).map_err(io::Error::other)?;
       continue;
     }
-    // if src is not a dir:
+
+    // if src is not a dir => copy_stdin or copy_file or copy_all
     fs::create_dir_all(dst_path)?;
     match stdin_found {
       false if src == "-" => {
         stdin_found = true;
-        copy_from_stdin_to_file(dst_path)?;
+        copy_from_stdin_to_file(dst_path)
       }
-      _ => {
-        fs_extra::file::copy(src, dst_path, &cp_file_options())
-          .map_err(io::Error::other)?;
-      }
-    }
+      _ => copy_src_to_dst_file(src, dst_path, false),
+    }?
   }
-
   Ok(())
 }
 
 pub(crate) fn display_copy_all_help() -> io::Result<()> {
-  use cardbox::imp_std::common::puts;
-
   r##"
 Usage:
       copy-all [/path/to/src_file] [/path/to/dst_file]
