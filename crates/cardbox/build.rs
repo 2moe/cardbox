@@ -9,14 +9,19 @@ fn main() {
   set_target_envs().expect("Failed to set envs")
 }
 
+// https://doc.rust-lang.org/cargo/reference/environment-variables.html
 fn set_target_envs() -> io::Result<()> {
   let env_vars = [
     ("family", cargo_cfg!(target_family)),
     ("os", cargo_cfg!(target_os)),
     ("arch", cargo_cfg!(target_arch)),
+    ("vendor", cargo_cfg!(target_vendor)),
+    ("env", cargo_cfg!(target_env)),
+    ("abi", cargo_cfg!(target_abi)),
     ("pointer_width", cargo_cfg!(target_pointer_width)),
     ("endian", cargo_cfg!(target_endian)),
-    ("feature", cargo_cfg!(feature)),
+    ("feature", cargo_cfg!(target_feature)),
+    ("cargo_feature", cargo_cfg!(feature)),
     ("target", env::var("TARGET")),
     // ("profile", env::var("PROFILE")),
     // ("rustflags", env::var("CARGO_ENCODED_RUSTFLAGS")),

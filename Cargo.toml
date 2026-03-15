@@ -1,32 +1,39 @@
+[package]
+name = "tests"
+edition.workspace = true
+
 [workspace]
-members = ["crates/*"]
 resolver = "3"
+members = ["crates/*"]
 
 [workspace.package]
+authors = ["Moe <m@tmoe.me>"]
 # version = "0.0.0-alpha.0"
 edition = "2024"
 rust-version = "1.85"
-license = "Apache-2.0"
-authors = ["Moe <m@tmoe.me>"]
 readme = "docs/Readme.md"
 repository = "https://github.com/2moe/cardbox"
-keywords = ["coreutils", "busybox", "cli", "utility"]
+license = "Apache-2.0"
+keywords = ["busybox", "cli", "coreutils", "utility"]
 categories = ["command-line-utilities"]
 
 [workspace.dependencies]
-tap = "1.0"
-# mimalloc = "0.1.48"
 anyhow = { version = "1.0", default-features = false }
-rustix = { version = "1.1", default-features = false }
-libc = { version = "0.2.182", default-features = false }
+argh = "0.1.14"
+cardbox = { path = "crates/cardbox" }
 compact_str = { version = "0.9", default-features = false }
+fs_extra = "1.3.0"
+libc = { version = "0.2.182", default-features = false }
+log = "0.4.29"
+rustix = { version = "1.1", default-features = false }
+serde = { version = "1.0.228", default-features = false, features = [
+  "alloc",
+  "derive"
+] }
+serde_json = "1.0.149"
+tap = "1.0"
 # path = "../testutils"
 testutils = { version = "0.0.12", default-features = false }
-log = "0.4.29"
-cardbox = { path = "crates/cardbox" }
-fs_extra = "1.3.0"
-argh = "0.1.14"
-serde_json = "1.0.149"
 time = { version = "0.3", default-features = false }
 
 # Linux
@@ -35,38 +42,37 @@ syscalls = { version = "0.8.1", default-features = false }
 # Unix like
 # libc-print = "0.1.23"
 
+# musl Linux
+# mimalloc = "0.1.48"
+
 # Windows
 windows-sys = { version = "0.61.2", default-features = false }
 
-[package]
-name = "tests"
-edition.workspace = true
+[workspace.lints.rust.unexpected_cfgs]
+level = "warn"
+check-cfg = ["cfg(rust_analyzer)"]
+
+[dependencies]
 
 [dev-dependencies]
 anyhow.workspace = true
-testutils = { workspace = true, default-features = true }
 cardbox-target = { path = "./crates/cardbox-target" }
-
-[workspace.lints.rust.unexpected_cfgs]
-level = "warn"
-check-cfg = ['cfg(rust_analyzer)']
+testutils = { workspace = true, default-features = true }
 
 [profile.release]
 panic = "abort"
 
 [profile.fat]
 inherits = "release"
-lto = "fat"
 opt-level = "z"
 strip = true
+lto = "fat"
 panic = "abort"
 # codegen-units = 1
 
 [profile.thin]
 inherits = "release"
-lto = "thin"
-panic = "abort"
 opt-level = "s"
 strip = true
-
-[dependencies]
+lto = "thin"
+panic = "abort"

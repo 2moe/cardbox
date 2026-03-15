@@ -9,46 +9,47 @@ license.workspace = true
 # categories = ["os"]
 categories.workspace = true
 
-repository.workspace = true
 rust-version.workspace = true
 description = "CLI utilities purpose-built for scratch container environments."
+repository.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
 
-[features]
-default = []
-serde = ["dep:serde_json"]
-# argh = ["dep:argh"]
-# compact_str = ["dep:compact_str"]
-# ===
-target = ["cardbox/uts_name", "cardbox/rustix"]
-copy-file = []
-copy-all = ["cardbox/copy_all"]
-list = ["cardbox/list", "serde"]
-rename = []
-run-cmd = []
-link-hard = []
-link-sym = []
-
-# cat = []
-# hardlink = []
-# symlink = []
-# mkdir = []
-# chmod = []
-
 [dependencies]
-tap.workspace = true
-cardbox = { workspace = true, features = ["std"] }
 argh = { workspace = true, optional = true }
+cardbox = { workspace = true, features = ["std"] }
 compact_str = { workspace = true, features = ["serde"], optional = true }
+serde = { workspace = true, features = ["std"], optional = true }
 serde_json = { workspace = true, optional = true }
+tap.workspace = true
 
 [build-dependencies]
-time = { workspace = true, features = ["formatting"] }
 serde_json.workspace = true
 testutils = { workspace = true, features = [
   "const_str",
   "os_cmd",
   "re_exports_tap",
 ] }
+time = { workspace = true, features = ["formatting"] }
+
+[features]
+default = []
+copy-all = ["cardbox/copy_all"]
+copy-file = []
+link-hard = []
+link-sym = []
+list = ["cardbox/list", "serde"]
+rename = []
+run-cmd = []
+serde = ["dep:serde", "dep:serde_json"]
+# argh = ["dep:argh"]
+# compact_str = ["dep:compact_str"]
+# ===
+target = ["cardbox/rustix", "cardbox/uts_name", "compact_str", "serde"]
+
+# cat = []
+# hardlink = []
+# symlink = []
+# mkdir = []
+# chmod = []

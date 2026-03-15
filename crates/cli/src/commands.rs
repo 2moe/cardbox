@@ -96,7 +96,7 @@ pub(crate) fn display_version_in_json() -> io::Result<()> {
     "version": version(),
     "cargo_features": feats,
     "commit_hash": commit_hash,
-    "build_time": build_time,
+    "build_date_time": build_time,
     "build_host": host,
     "target": cardbox::consts::target(),
   })

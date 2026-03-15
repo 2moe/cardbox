@@ -73,7 +73,7 @@ fn parse_and_run_command(
     "copy-all" => copy::copy_all::run(rest_args),
     // target + uts-name
     #[cfg(feature = "target")]
-    "target" => target_info::target_info(rest_args),
+    "target" => target_info::run(rest_args),
     //
     #[cfg(feature = "list")]
     "list" => {
