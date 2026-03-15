@@ -2,7 +2,7 @@ use std::{io, path::Path};
 
 use tap::Pipe;
 
-use crate::imp_std::path::eputs_path;
+use crate::imp_std::{common::eprint, path::eputs_path};
 
 /// This function checks whether the last command-line argument (`dst_path`) is
 /// a directory and returns an `io::Result` carrying an error message if it is
@@ -43,10 +43,15 @@ pub fn reject_non_dir_dst_for_multi_files(dst_path: &Path) -> io::Result<()> {
     Please provide a valid directory path."#;
 
   if dst_path.exists() && !dst_path.is_dir() {
+    eprint("[ERROR] Not a directory: ")?;
     eputs_path(dst_path)?;
-    io_invalid_input(err_msg).pipe(Err)?
+    io_not_a_dir(err_msg).pipe(Err)?
   }
   Ok(())
+}
+
+pub fn io_not_a_dir(s: &str) -> io::Error {
+  io::Error::new(io::ErrorKind::NotADirectory, s)
 }
 
 pub fn io_invalid_input(s: &str) -> io::Error {

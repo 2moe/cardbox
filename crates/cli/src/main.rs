@@ -85,8 +85,8 @@ fn parse_and_run_command(
       todo!()
     }
     //
-    #[cfg(feature = "run-command")]
-    "run-command" => {
+    #[cfg(feature = "run-cmd")]
+    "run-cmd" => {
       todo!()
     }
     _ if rest_args.is_none() => commands::help_info(),

@@ -82,13 +82,25 @@ Usage:
   OR: copy-file [/path/to/dst_file]
   OR: copy-file [file_1] [file_2] [file_n..] [/path/to/dir]
 
-Note: "-" is stdin, use "-" as src to copy from stdin to dst_file.
+Note: "-" is stdin, use "-" as src_file to copy from stdin to dst_file.
 
 e.g.,
+  // copy file from /tmp/a.txt to b.txt
   copy-file /tmp/a.txt b.txt
 
+  // copy file from a.txt to ./tmp/a.txt
+  copy-file a.txt tmp/
+
+  // - en: When reading from standard input (stdin),
+  //       you can press Ctrl+D after completing the input to signal EOF
+  //       and terminate the input.
+  // - zh: 当从 stdin 读取数据时，您可以在输入完成后，按下 Ctrl+D 来退出。
+  //
   // copy file from stdin to tmp.txt
   copy-file tmp.txt
+
+  // copy file from stdin to ./tmp/-
+  copy-file tmp/
 
   // copy multiple files to a directory
   copy-file a1.txt a2.txt a3.txt /tmp

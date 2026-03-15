@@ -24,8 +24,8 @@ pub(crate) fn all_available_commands() -> Box<[&'static str]> {
     #[cfg(feature = "rename")]
     "rename",
     //
-    #[cfg(feature = "run-command")]
-    "run-command",
+    #[cfg(feature = "run-cmd")]
+    "run-cmd",
   ]
   .into()
 }

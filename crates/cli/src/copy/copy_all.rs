@@ -82,11 +82,15 @@ Usage:
   OR: copy-all [file_1] [file_2] [file_n..] [/path/to/dir]
   OR: copy-all [dir_1] [dir_2] [dir_n..] [/path/to/dir]
 
-Note: "-" is stdin, use "-" as src to copy from stdin to dst_path.
+Note: "-" is stdin, use "-" as src_file to copy from stdin to dst_path.
 
 e.g.,
   copy-all /tmp/dir_a dir_b
 
+  // - en: When reading from standard input, press **Ctrl+D** to indicate
+  //       end-of-file (EOF) after completing the input.
+  // - zh: 当从 stdin 读取数据时，您可以在输入完成后，按下 Ctrl+D 来退出。
+  //
   // copy file from stdin to tmp.txt
   copy-all tmp.txt
 
