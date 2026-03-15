@@ -85,13 +85,23 @@ struct TargetInfo {
   family: Sstr,
   os: Sstr,
   arch: Sstr,
+
+  #[serde(skip_serializing_if = "str::is_empty")]
   vendor: Sstr,
+
+  #[serde(skip_serializing_if = "str::is_empty")]
   env: Sstr,
+
+  #[serde(skip_serializing_if = "str::is_empty")]
   abi: Sstr,
+
   pointer_width: Sstr,
   endian: Sstr,
   features: Features,
   cardbox_features: Features,
+
+  #[serde(skip_serializing_if = "Option::is_none")]
+  rust_flags: Option<Features>,
 
   #[serde(skip_serializing_if = "Option::is_none")]
   uts: Option<uts_name::UtsName>,
@@ -121,6 +131,17 @@ impl Default for TargetInfo {
       endian: target_endian(),
       features: target_feature().pipe(split_comma),
       cardbox_features: cargo_feature().pipe(split_comma),
+      rust_flags: {
+        let c = unsafe { char::from_u32_unchecked(0x1f) };
+        let v = encoded_rust_flags()
+          .split(c)
+          .collect::<Vec<_>>();
+
+        match v.as_slice() {
+          &[] | &[""] => None,
+          _ => Some(v.into()),
+        }
+      },
       target: target(),
 
       #[allow(unreachable_patterns)]
@@ -191,6 +212,15 @@ fn parse_first_two_args(arg_1st: &str, arg_2nd: Option<&str>) -> io::Result<()> 
       println!("{v:?}");
       return Ok(());
     }
+    "r" | "rust_flags" | "rust-flags" | "rustflags" => {
+      match info.rust_flags {
+        Some(v) => println!("{v:?}"),
+        _ => {
+          eputs("[WARN] rust_flags is empty.")?;
+        }
+      }
+      return Ok(());
+    }
     "t" | "target" => info.target,
     #[cfg(unix)]
     "u" | "uts" => {
@@ -233,6 +263,7 @@ fn show_available_keys() -> io::Result<()> {
     fe  | features
     c   | cardbox-features
     t   | target
+    r   | rust-flags
     u   | uts (unix only)
 "#
   .pipe(eprint)

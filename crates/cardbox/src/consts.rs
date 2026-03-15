@@ -36,3 +36,7 @@ pub const fn cargo_feature() -> &'static str {
 pub const fn target() -> &'static str {
   env!("__cardbox_cfg_target")
 }
+/// separated by 0x1f
+pub const fn encoded_rust_flags() -> &'static str {
+  env!("__cardbox_cfg_encoded_rust_flags")
+}

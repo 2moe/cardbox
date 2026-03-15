@@ -8,6 +8,7 @@ pub mod utils;
 
 pub mod copy;
 pub mod fs;
+pub mod list;
 pub mod path;
 
 // === UNIX only ===

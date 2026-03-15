@@ -39,4 +39,5 @@ rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
 default = []
 # ===
 copy_all = ["dep:fs_extra"]
+list = []
 uts_name = ["rustix/system"]

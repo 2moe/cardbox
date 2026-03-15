@@ -24,7 +24,7 @@ fn set_target_envs() -> io::Result<()> {
     ("cargo_feature", cargo_cfg!(feature)),
     ("target", env::var("TARGET")),
     // ("profile", env::var("PROFILE")),
-    // ("rustflags", env::var("CARGO_ENCODED_RUSTFLAGS")),
+    ("encoded_rust_flags", env::var("CARGO_ENCODED_RUSTFLAGS")),
   ];
 
   let env_err = |e| {
