@@ -6,45 +6,46 @@ authors.workspace = true
 # readme = "./docs/Readme.md"
 edition.workspace = true
 license.workspace = true
-keywords = ["coreutils", "busybox", "utility"]
+keywords = ["busybox", "coreutils", "utility"]
 # keywords.workspace = true
 # categories.workspace = true
 categories = ["os"]
 
-repository.workspace = true
 rust-version.workspace = true
 description = "A modern, modular, and cross-platform implementation of core system utilities."
+repository.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
 
-[features]
-default = []
-std = ["log/std", "rustix?/std"]
-# === UNIX Like no_std ===
-rustix = ["dep:rustix"]
-use_libc = ["rustix?/use-libc"]
-rustix_fs = ["rustix?/fs"]
-uts_name = ["rustix?/system"]
-# ===
-copy_all = ["std", "dep:fs_extra"]
-list = []
-
-
 [dependencies]
-tap.workspace = true
 fs_extra = { workspace = true, optional = true }
 log = { workspace = true, optional = true }
-
-[target.'cfg(not(windows))'.dependencies]
-rustix = { workspace = true, optional = true, features = ["stdio", "alloc"] }
-libc.workspace = true
-# libc-print.workspace = true
+tap.workspace = true
 
 [build-dependencies]
 # compact_str.workspace = true
 testutils = { workspace = true, features = [
   "const_str",
-  "std",
   "re_exports_tap",
+  "std",
 ] }
+
+[target.'cfg(not(windows))'.dependencies]
+libc.workspace = true
+rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
+# libc-print.workspace = true
+
+[features]
+default = []
+std = ["log/std", "rustix?/std"]
+
+# === UNIX Like; no_std ===
+rustix = ["dep:rustix"]
+rustix_fs = ["rustix?/fs"]
+use_libc = ["rustix?/use-libc"]
+uts_name = ["rustix?/system"]
+# ===
+
+copy_all = ["dep:fs_extra", "std"]
+list = []

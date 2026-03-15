@@ -44,9 +44,8 @@ rename = []
 run-cmd = []
 serde = ["dep:serde", "dep:serde_json"]
 # argh = ["dep:argh"]
-# compact_str = ["dep:compact_str"]
 # ===
-target = ["cardbox/rustix", "cardbox/uts_name", "compact_str", "serde"]
+target = ["cardbox/rustix", "cardbox/uts_name", "dep:compact_str", "serde"]
 
 # cat = []
 # hardlink = []
