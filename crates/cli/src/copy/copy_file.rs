@@ -1,12 +1,12 @@
 use std::{fs, io, path::Path};
 
-use cardbox::imp_std::{
-  common::{eprint, eputs},
+use cardbox::{
   copy::{
     error::reject_non_dir_dst_for_multi_files,
     file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
   },
   path::{eputs_path, split_last_path},
+  utils::{eprint, eputs, puts},
 };
 use tap::Pipe;
 
@@ -74,8 +74,6 @@ fn copy_all_files_to_dir(src_strs: &[String], dst_path: &Path) -> io::Result<()>
 }
 
 pub(crate) fn display_copy_file_help() -> io::Result<()> {
-  use cardbox::imp_std::common::puts;
-
   r##"
 Usage:
       copy-file [/path/to/src_file] [/path/to/dst_file]

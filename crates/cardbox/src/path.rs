@@ -2,7 +2,7 @@ use std::path::Path;
 
 use tap::Pipe;
 
-use crate::imp_std::common::eputs;
+use crate::utils::eputs;
 
 /// Splits the last argument as the destination path and returns the remaining
 /// source arguments.

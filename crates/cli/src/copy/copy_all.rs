@@ -1,13 +1,13 @@
 use std::{fs, io, path::Path};
 
-use cardbox::imp_std::{
-  common::puts,
+use cardbox::{
   copy::{
     error::reject_non_dir_dst_for_multi_files,
     extra::copy_all as fs_copy_all,
     file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
   },
   path::split_last_path,
+  utils::puts,
 };
 use tap::Pipe;
 

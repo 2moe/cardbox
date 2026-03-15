@@ -1,4 +1,4 @@
-use rustix::{io, io::IoSlice};
+use std::io::{self, IoSlice, Write};
 
 /// Converts a byte count into a human‑readable IEC unit (base‑1024).
 ///
@@ -27,7 +27,6 @@ use rustix::{io, io::IoSlice};
 /// ```
 // It's interesting to note that using the f32/f64 types here results in a 20K
 // larger binary file.
-#[cfg(feature = "list")]
 pub fn readable_unit(bytes: i64) -> (f64, &'static str) {
   ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
     .iter()
@@ -38,11 +37,27 @@ pub fn readable_unit(bytes: i64) -> (f64, &'static str) {
     .unwrap_or((bytes as _, "B"))
 }
 
-/// e.g., `puts(b"Hello")`
-pub fn puts(buf: &[u8]) -> io::Result<usize> {
-  if buf.is_empty() {
-    return Ok(0);
-  }
-  let out = rustix::stdio::stdout();
-  io::writev(out, &[buf, b"\n"].map(IoSlice::new))
+pub fn concat_newline(bytes: &[u8]) -> [std::io::IoSlice<'_>; 2] {
+  [bytes, b"\n"].map(IoSlice::new)
+}
+
+/// - pseudocode: "{s}\n" |> stdio.write
+/// - similar to: `println!("{s}")`
+pub fn puts<S: AsRef<[u8]>>(s: S) -> io::Result<usize> {
+  let bufs = concat_newline(s.as_ref());
+
+  io::stdout().write_vectored(&bufs)
+}
+
+/// - pseudocode: "{s}\n" |> stderr.write
+/// - similar to: `eprintln!("{s}")`
+pub fn eputs<S: AsRef<[u8]>>(s: S) -> io::Result<usize> {
+  let bufs = concat_newline(s.as_ref());
+
+  io::stderr().write_vectored(&bufs)
+}
+
+/// - similar to: `eprint!("{s}")`
+pub fn eprint<S: AsRef<[u8]>>(s: S) -> io::Result<()> {
+  io::stderr().write_all(s.as_ref())
 }

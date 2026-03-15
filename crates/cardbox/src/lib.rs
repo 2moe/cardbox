@@ -1,15 +1,16 @@
-#![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 /*!
 # CardBox
 */
 
 pub mod consts;
+pub mod utils;
 
-// #[deprecated]
-#[cfg(not(windows))]
-#[cfg(feature = "rustix")]
-pub mod no_std;
+pub mod copy;
+pub mod fs;
+pub mod path;
 
-#[cfg(feature = "std")]
-pub mod imp_std;
+// === UNIX only ===
+#[cfg(unix)]
+#[cfg(feature = "uts_name")]
+pub use rustix::system::uname;

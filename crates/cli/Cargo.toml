@@ -18,7 +18,7 @@ all-features = true
 
 [dependencies]
 argh = { workspace = true, optional = true }
-cardbox = { workspace = true, features = ["std"] }
+cardbox = { workspace = true }
 compact_str = { workspace = true, features = ["serde"], optional = true }
 serde = { workspace = true, features = ["std"], optional = true }
 serde_json = { workspace = true, optional = true }
@@ -39,13 +39,15 @@ copy-all = ["cardbox/copy_all"]
 copy-file = []
 link-hard = []
 link-sym = []
-list = ["cardbox/list", "serde"]
+list = ["serde"]
 rename = []
+# remove-empty
+# remove-all
 run-cmd = []
 serde = ["dep:serde", "dep:serde_json"]
 # argh = ["dep:argh"]
 # ===
-target = ["cardbox/rustix", "cardbox/uts_name", "dep:compact_str", "serde"]
+target = ["cardbox/uts_name", "dep:compact_str", "serde"]
 
 # cat = []
 # hardlink = []

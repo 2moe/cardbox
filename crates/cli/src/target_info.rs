@@ -1,6 +1,6 @@
 use std::io;
 
-use cardbox::imp_std::common::{eputs, puts};
+use cardbox::utils::{eprint, eputs, puts};
 use serde::Serialize;
 use tap::Pipe;
 
@@ -37,7 +37,7 @@ mod uts_name {
           .to_compact_string()
       };
 
-      let uname = cardbox::no_std::uname();
+      let uname = cardbox::uname();
       let machine = uname.machine().pipe(to_str);
       let sys_name = uname.sysname().pipe(to_str);
       let release = uname.release().pipe(to_str);
@@ -143,23 +143,27 @@ fn display_target_info_json(info: &TargetInfo) -> io::Result<()> {
 
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   let info = TargetInfo::default();
-  let help = || display_target_info_json(&info);
+  let help_in_json = || display_target_info_json(&info);
 
   // args is_empty() or None => help()
   let args = match args {
-    Some(&[]) => return help(),
+    Some(&[]) => return help_in_json(),
     Some(x) => x,
-    _ => return help(),
+    _ => return help_in_json(),
   };
 
   if contains_help(args) {
-    puts(target_info_comment())?;
-    return Ok(());
+    return help();
   }
 
   let arg_2nd = args.get(1).map(|x| x.as_str());
   parse_first_two_args(&args[0], arg_2nd)?;
 
+  Ok(())
+}
+fn help() -> io::Result<()> {
+  puts(target_info_comment())?;
+  show_available_keys()?;
   Ok(())
 }
 
@@ -168,7 +172,7 @@ fn parse_first_two_args(arg_1st: &str, arg_2nd: Option<&str>) -> io::Result<()> 
 
   match arg_1st {
     "/" => return display_target_info_json(&info),
-    "///" => target_info_comment(),
+    "///" => return help(),
     "f" | "family" => info.family,
     "o" | "os" => info.os,
     "a" | "arch" => info.arch,
@@ -204,31 +208,34 @@ fn parse_first_two_args(arg_1st: &str, arg_2nd: Option<&str>) -> io::Result<()> 
       return Ok(());
     }
     _ => {
-      eputs(
-        r#"[WARN] Invalid key.
-      Available:
-        /
-        /// | help
-        f   | family
-        o   | os
-        a   | arch
-        v   | vendor
-        env
-        abi
-        p   | pointer-width
-        e   | endian
-        fe  | features
-        c   | cardbox-features
-        t   | target
-        u   | uts (unix only)
-      "#,
-      )?;
+      eputs(r#"[WARN] Invalid key."#)?;
+      show_available_keys()?;
       return Ok(());
     }
   }
   .pipe(puts)?;
 
   Ok(())
+}
+fn show_available_keys() -> io::Result<()> {
+  r#"
+  Available:
+    /
+    /// | help
+    f   | family
+    o   | os
+    a   | arch
+    v   | vendor
+    env
+    abi
+    p   | pointer-width
+    e   | endian
+    fe  | features
+    c   | cardbox-features
+    t   | target
+    u   | uts (unix only)
+"#
+  .pipe(eprint)
 }
 
 fn target_info_comment() -> Sstr {

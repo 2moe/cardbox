@@ -2,7 +2,7 @@ use std::{borrow::Cow, fs, io, path::Path};
 
 use tap::Pipe;
 
-use crate::imp_std::{copy::error::io_invalid_input, fs::create_a_new_buf_writer};
+use crate::{copy::error::io_invalid_input, fs::create_a_new_buf_writer};
 
 /// Ensure the destination directory exists.
 ///

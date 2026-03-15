@@ -1,6 +1,6 @@
 use std::io::{self, Write, stdout};
 
-use cardbox::imp_std::common::{eprint, eputs, puts};
+use cardbox::utils::{eprint, eputs, puts};
 use tap::Pipe;
 
 pub(crate) fn all_available_commands() -> Box<[&'static str]> {

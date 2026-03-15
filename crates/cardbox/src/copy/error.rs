@@ -2,7 +2,7 @@ use std::{io, path::Path};
 
 use tap::Pipe;
 
-use crate::imp_std::{common::eprint, path::eputs_path};
+use crate::{path::eputs_path, utils::eprint};
 
 /// This function checks whether the last command-line argument (`dst_path`) is
 /// a directory and returns an `io::Result` carrying an error message if it is

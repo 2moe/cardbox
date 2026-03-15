@@ -20,7 +20,7 @@ all-features = true
 
 [dependencies]
 fs_extra = { workspace = true, optional = true }
-log = { workspace = true, optional = true }
+# log = { workspace = true, optional = true }
 tap.workspace = true
 
 [build-dependencies]
@@ -32,20 +32,11 @@ testutils = { workspace = true, features = [
 ] }
 
 [target.'cfg(not(windows))'.dependencies]
-libc.workspace = true
 rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
 # libc-print.workspace = true
 
 [features]
 default = []
-std = ["log/std", "rustix?/std"]
-
-# === UNIX Like; no_std ===
-rustix = ["dep:rustix"]
-rustix_fs = ["rustix?/fs"]
-use_libc = ["rustix?/use-libc"]
-uts_name = ["rustix?/system"]
 # ===
-
-copy_all = ["dep:fs_extra", "std"]
-list = []
+copy_all = ["dep:fs_extra"]
+uts_name = ["rustix/system"]

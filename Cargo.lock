@@ -50,8 +50,6 @@ name = "cardbox"
 version = "0.0.1-alpha.1"
 dependencies = [
  "fs_extra",
- "libc",
- "log",
  "rustix",
  "tap",
  "testutils",

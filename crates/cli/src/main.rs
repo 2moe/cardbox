@@ -5,7 +5,7 @@ use std::{
 };
 
 mod commands;
-use cardbox::imp_std::common::eprint;
+use cardbox::utils::eprint;
 use tap::Pipe;
 
 fn main() -> io::Result<()> {
@@ -60,6 +60,9 @@ mod copy;
 #[cfg(feature = "target")]
 mod target_info;
 
+#[cfg(feature = "list")]
+mod list;
+
 // ===================
 fn parse_and_run_command(
   program_stem: &str,
@@ -76,9 +79,7 @@ fn parse_and_run_command(
     "target" => target_info::run(rest_args),
     //
     #[cfg(feature = "list")]
-    "list" => {
-      todo!()
-    }
+    "list" => list::run(rest_args),
     //
     #[cfg(feature = "rename")]
     "rename" => {
