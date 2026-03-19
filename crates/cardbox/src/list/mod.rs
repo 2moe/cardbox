@@ -30,7 +30,6 @@ pub struct MetaData {
   pub size: u64,
   pub size_readable: MiniStr,
 
-  //
   /// permissions
   #[cfg(any(unix, windows))]
   pub perms: Permissions,
@@ -108,19 +107,13 @@ fn init_file_time(metadata: &std::fs::Metadata) -> FileTime {
     return Default::default();
   };
 
-  let created = offset_time::systemtime_to_rfc3339(c_time);
+  let created = offset_time::systime_to_rfc3339(c_time);
 
   let modified = match metadata.modified() {
     Ok(x) if x == c_time => None,
-    Ok(x) => offset_time::systemtime_to_rfc3339(x),
+    Ok(x) => offset_time::systime_to_rfc3339(x),
     _ => None,
   };
-
-  // let accessed = match metadata.accessed() {
-  //   Ok(x) if x == m_time => None,
-  //   Ok(x) => offset_time::systemtime_to_rfc3339(x),
-  //   _ => None,
-  // };
 
   FileTime {
     modified,
@@ -178,12 +171,8 @@ pub struct EntryProperty {
 
 #[cfg(test)]
 mod tests {
-  use std::{
-    env, fs, io,
-    path::{Path, PathBuf},
-  };
+  use std::{fs, io, path::Path};
 
-  use serde::Serialize;
   use tap::Pipe;
 
   use crate::{list::MetaData, utils::puts};
@@ -243,7 +232,16 @@ mod tests {
   #[ignore]
   #[test]
   fn show_symlink_metadata_json() -> io::Result<()> {
-    MetaData::new("tmp.xx")?
+    MetaData::new("_tmp.xx")?
+      .pipe_ref(serde_json::to_string_pretty)?
+      .pipe(puts)?;
+    Ok(())
+  }
+
+  #[ignore]
+  #[test]
+  fn show_empty_file_metadata_json() -> io::Result<()> {
+    MetaData::new("_tmp.empty")?
       .pipe_ref(serde_json::to_string_pretty)?
       .pipe(puts)?;
     Ok(())
