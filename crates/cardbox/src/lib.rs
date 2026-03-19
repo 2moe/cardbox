@@ -8,7 +8,10 @@ pub mod utils;
 
 pub mod copy;
 pub mod fs;
+
+#[cfg(feature = "list")]
 pub mod list;
+
 pub mod path;
 
 // === UNIX only ===

@@ -10,7 +10,7 @@ use cardbox::{
 };
 use tap::Pipe;
 
-use crate::commands::contains_help;
+use crate::commands::contain_help_flag;
 
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   use display_copy_file_help as help;
@@ -21,7 +21,7 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
     Some(x) => x,
     _ => return help(),
   };
-  if contains_help(args) {
+  if contain_help_flag(args) {
     return help();
   }
 
@@ -89,13 +89,22 @@ e.g.,
   // copy file from a.txt to ./tmp/a.txt
   copy-file a.txt tmp/
 
-  // - en: When reading from standard input (stdin),
-  //       you can press Ctrl+D after completing the input to signal EOF
-  //       and terminate the input.
+  // - en:
+  //   - POSIX-sh => ^D => EOF
+  //   - Windows-CMD => ^Z, Enter => EOF
+  //   When reading from standard input (stdin),
+  //   you can press Ctrl+D after completing the input to signal EOF
+  //   and terminate the input.
   // - zh: 当从 stdin 读取数据时，您可以在输入完成后，按下 Ctrl+D 来退出。
   //
   // copy file from stdin to tmp.txt
   copy-file tmp.txt
+
+  // copy file from stdin to tmp.txt
+  copy-file - tmp.txt
+
+  // copy "./-" (non-stdin) to tmp.txt
+  copy-file ./- tmp.txt
 
   // copy file from stdin to ./tmp/-
   copy-file tmp/

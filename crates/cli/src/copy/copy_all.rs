@@ -11,7 +11,7 @@ use cardbox::{
 };
 use tap::Pipe;
 
-use crate::commands::contains_help;
+use crate::commands::contain_help_flag;
 
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   use display_copy_all_help as help;
@@ -22,7 +22,7 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
     Some(x) => x,
     _ => return help(),
   };
-  if contains_help(args) {
+  if contain_help_flag(args) {
     return help();
   }
 

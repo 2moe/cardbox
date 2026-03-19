@@ -4,7 +4,7 @@ use cardbox::utils::{eprint, eputs, puts};
 use serde::Serialize;
 use tap::Pipe;
 
-use crate::commands::contains_help;
+use crate::commands::contain_help_flag;
 
 mod uts_name {
   use compact_str::CompactString as MiniStr;
@@ -173,7 +173,7 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
     _ => return help_in_json(),
   };
 
-  if contains_help(args) {
+  if contain_help_flag(args) {
     return help();
   }
 
@@ -264,7 +264,7 @@ fn show_available_keys() -> io::Result<()> {
     c   | cardbox-features
     t   | target
     r   | rust-flags
-    u   | uts (unix only)
+    u   | uts (only on unix)
 "#
   .pipe(eprint)
 }

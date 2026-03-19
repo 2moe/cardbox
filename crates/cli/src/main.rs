@@ -39,7 +39,6 @@ fn run_cardbox(rest_args: Option<&[String]>) -> io::Result<()> {
 
     #[cfg(feature = "serde")]
     "--list" => commands::list_all_commands_in_json(),
-
     "-h" | "--help" | "" => commands::help_info(),
 
     x if commands::all_available_commands().contains(&x) => {

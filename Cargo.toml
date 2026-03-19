@@ -10,7 +10,7 @@ members = ["crates/*"]
 authors = ["Moe <m@tmoe.me>"]
 # version = "0.0.0-alpha.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 readme = "docs/Readme.md"
 repository = "https://github.com/2moe/cardbox"
 license = "Apache-2.0"
@@ -31,10 +31,15 @@ serde = { version = "1.0.228", default-features = false, features = [
   "derive"
 ] }
 serde_json = "1.0.149"
+serde_with = { version = "3.18.0", default-features = false, features = [
+  "alloc",
+  "macros"
+] }
 tap = "1.0"
 # path = "../testutils"
 testutils = { version = "0.0.12", default-features = false }
 time = { version = "0.3", default-features = false }
+tinystr = "0.8.2"
 
 # Linux
 syscalls = { version = "0.8.1", default-features = false }
@@ -53,6 +58,7 @@ level = "warn"
 check-cfg = ["cfg(rust_analyzer)"]
 
 [dependencies]
+time.workspace = true
 
 [dev-dependencies]
 anyhow.workspace = true

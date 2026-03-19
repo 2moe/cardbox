@@ -130,8 +130,8 @@ pub(crate) fn list_all_commands_in_json() -> io::Result<()> {
   Ok(())
 }
 
-pub(crate) fn contains_help(args: &[String]) -> bool {
+pub(crate) fn contain_help_flag(args: &[String]) -> bool {
   args
     .iter()
-    .any(|x| ["-h", "help", "--help"].contains(&x.as_ref()))
+    .any(|x| ["-h", "--help"].contains(&x.as_ref()))
 }

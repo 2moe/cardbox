@@ -41,6 +41,7 @@ link-hard = []
 link-sym = []
 list = ["serde"]
 rename = []
+# unlink-ino
 # remove-empty
 # remove-all
 run-cmd = []

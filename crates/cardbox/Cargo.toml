@@ -19,12 +19,20 @@ repository.workspace = true
 all-features = true
 
 [dependencies]
+compact_str = { workspace = true, optional = true }
 fs_extra = { workspace = true, optional = true }
+serde = { workspace = true, features = ["std"], optional = true }
+serde_json = { workspace = true, optional = true }
+serde_with = { workspace = true, optional = true }
 # log = { workspace = true, optional = true }
 tap.workspace = true
+time = { workspace = true, features = ["formatting", "std"], optional = true }
+tinystr = { workspace = true, features = ["serde"], optional = true }
+
+[dev-dependencies]
+serde_json.workspace = true
 
 [build-dependencies]
-# compact_str.workspace = true
 testutils = { workspace = true, features = [
   "const_str",
   "re_exports_tap",
@@ -37,7 +45,7 @@ rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
 
 [features]
 default = []
-# ===
 copy_all = ["dep:fs_extra"]
-list = []
+list = ["compact_str?/serde", "dep:time", "dep:tinystr", "serde"]
+serde = ["dep:serde", "dep:serde_json", "dep:serde_with"]
 uts_name = ["rustix/system"]
