@@ -1,4 +1,7 @@
-use std::io::{self, Write, stdout};
+use std::{
+  io::{self, Write, stdout},
+  path::Path,
+};
 
 use cardbox::utils::{eprint, eputs, puts};
 use tap::Pipe;
@@ -130,8 +133,15 @@ pub(crate) fn list_all_commands_in_json() -> io::Result<()> {
   Ok(())
 }
 
-pub(crate) fn contain_help_flag(args: &[String]) -> bool {
-  args
-    .iter()
-    .any(|x| ["-h", "--help"].contains(&x.as_ref()))
+pub(crate) fn is_first_help_flag(args: &[String]) -> bool {
+  // old:
+  //  args
+  //    .iter()
+  //    .any(|x| ["-h", "--help"].contains(&x.as_ref()))
+
+  match args.first().map(|x| x.as_str()) {
+    Some("-h") if !Path::new("-h").exists() => true,
+    Some("--help") if !Path::new("--help").exists() => true,
+    _ => false,
+  }
 }

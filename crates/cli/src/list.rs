@@ -9,28 +9,28 @@ use compact_str::format_compact;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use tap::{Pipe, Tap};
 
+use crate::commands::is_first_help_flag;
+
 pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   use display_list_help as help;
 
-  let args = match args {
+  let paths = match args {
     Some(&[]) | None => return print_json(&[".".into()]),
     Some(x) => x,
   };
 
-  match args.first().map(|x| x.as_str()) {
-    Some("-h") if !Path::new("-h").exists() => return help(),
-    Some("--help") if !Path::new("--help").exists() => return help(),
-    _ => {}
+  if is_first_help_flag(paths) {
+    return help();
   }
 
-  print_json(args)
+  print_json(paths)
 }
 
-fn print_json(args: &[String]) -> io::Result<()> {
+fn print_json(paths: &[String]) -> io::Result<()> {
   let mut lock = io::stdout().lock();
   lock.write_all(b"[\n")?;
 
-  for (i, path) in args
+  for (i, path) in paths
     .iter()
     .filter_map(|x| match Path::new(x) {
       p if p.exists() => Some(p),

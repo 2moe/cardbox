@@ -4,7 +4,7 @@ use cardbox::utils::{eprint, eputs, puts};
 use serde::Serialize;
 use tap::Pipe;
 
-use crate::commands::contain_help_flag;
+use crate::commands::is_first_help_flag;
 
 mod uts_name {
   use compact_str::CompactString as MiniStr;
@@ -168,12 +168,11 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
 
   // args is_empty() or None => help()
   let args = match args {
-    Some(&[]) => return help_in_json(),
+    Some(&[]) | None => return help_in_json(),
     Some(x) => x,
-    _ => return help_in_json(),
   };
 
-  if contain_help_flag(args) {
+  if is_first_help_flag(args) {
     return help();
   }
 
