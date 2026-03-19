@@ -29,9 +29,6 @@ tap.workspace = true
 time = { workspace = true, features = ["formatting", "local-offset", "std"], optional = true }
 tinystr = { workspace = true, features = ["serde"], optional = true }
 
-[dev-dependencies]
-serde_json.workspace = true
-
 [build-dependencies]
 testutils = { workspace = true, features = [
   "const_str",
@@ -46,6 +43,11 @@ rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
 [features]
 default = []
 copy_all = ["dep:fs_extra"]
-list = ["compact_str?/serde", "dep:time", "dep:tinystr", "serde"]
+list = [
+  "compact_str/serde",
+  "dep:time",
+  "dep:tinystr",
+  "serde",
+]
 serde = ["dep:serde", "dep:serde_json", "dep:serde_with"]
 uts_name = ["rustix/system"]

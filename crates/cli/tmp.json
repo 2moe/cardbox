@@ -1,0 +1,110 @@
+[
+  {
+    "//": "0.0",
+    "path": "tmp/build.rs",
+    "prop": {
+      "is_file": true
+    },
+    "size": 1680,
+    "size_readable": "1.641 KiB",
+    "perms": {
+      "owner": {
+        "uid": 1000,
+        "gid": 1000
+      },
+      "mode": "0o100664"
+    },
+    "nlink": 2,
+    "inode": 1747216367,
+    "time": {
+      "created": "2026-03-07T06:36:43+08:00",
+      "modified": "2026-03-05T10:44:26+08:00"
+    }
+  },
+  {
+    "//": "0.1",
+    "path": "tmp/Cargo.toml",
+    "prop": {
+      "is_file": true
+    },
+    "size": 1215,
+    "size_readable": "1.187 KiB",
+    "perms": {
+      "owner": {
+        "uid": 1000,
+        "gid": 1000
+      },
+      "mode": "0o100644"
+    },
+    "inode": 1747216368,
+    "time": {
+      "created": "2026-03-07T06:36:43+08:00",
+      "modified": "2026-03-05T22:53:37+08:00"
+    }
+  },
+  {
+    "//": "0.2",
+    "path": "tmp/a.sh",
+    "prop": {
+      "is_empty": true,
+      "is_file": true
+    },
+    "size": 0,
+    "size_readable": "0.000 B",
+    "perms": {
+      "owner": {
+        "uid": 1000,
+        "gid": 1001
+      },
+      "mode": "0o100664"
+    },
+    "inode": 1750279479,
+    "time": {
+      "created": "2026-03-16T19:21:18+08:00",
+      "modified": "2026-03-16T19:21:42+08:00"
+    }
+  },
+  {
+    "//": "0.3",
+    "path": "tmp/build2.rs",
+    "prop": {
+      "is_file": true
+    },
+    "size": 1680,
+    "size_readable": "1.641 KiB",
+    "perms": {
+      "owner": {
+        "uid": 1000,
+        "gid": 1000
+      },
+      "mode": "0o100664"
+    },
+    "nlink": 2,
+    "inode": 1747216367,
+    "time": {
+      "created": "2026-03-07T06:36:43+08:00",
+      "modified": "2026-03-05T10:44:26+08:00"
+    }
+  },
+  {
+    "//": "1",
+    "path": "Cargo.toml",
+    "prop": {
+      "is_file": true
+    },
+    "size": 1408,
+    "size_readable": "1.375 KiB",
+    "perms": {
+      "owner": {
+        "uid": 1000,
+        "gid": 1000
+      },
+      "mode": "0o100644"
+    },
+    "inode": 1348326133,
+    "time": {
+      "created": "2026-03-07T06:36:43+08:00",
+      "modified": "2026-03-19T23:18:53+08:00"
+    }
+  }
+]

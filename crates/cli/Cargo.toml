@@ -20,6 +20,7 @@ all-features = true
 argh = { workspace = true, optional = true }
 cardbox = { workspace = true }
 compact_str = { workspace = true, features = ["serde"], optional = true }
+rayon = { workspace = true, optional = true }
 serde = { workspace = true, features = ["std"], optional = true }
 serde_json = { workspace = true, optional = true }
 tap.workspace = true
@@ -39,7 +40,12 @@ copy-all = ["cardbox/copy_all"]
 copy-file = []
 link-hard = []
 link-sym = []
-list = ["serde"]
+list = [
+  "cardbox/list",
+  "dep:compact_str",
+  "dep:rayon",
+  "serde",
+]
 rename = []
 # unlink-ino
 # remove-empty

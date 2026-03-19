@@ -21,6 +21,9 @@ pub mod offset_time;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetaData {
+  #[serde(rename = "//")]
+  pub id: MiniStr,
+
   pub path: PathBuf,
   pub prop: EntryProperty,
 
@@ -34,6 +37,7 @@ pub struct MetaData {
   #[cfg(any(unix, windows))]
   pub perms: Permissions,
 
+  #[serde(skip_serializing_if = "is_not_hardlink")]
   #[cfg(unix)]
   pub nlink: u64,
 
@@ -41,6 +45,10 @@ pub struct MetaData {
   pub inode: u64,
 
   pub time: FileTime,
+}
+
+const fn is_not_hardlink(nlink: &u64) -> bool {
+  *nlink <= 1
 }
 
 impl MetaData {
@@ -81,6 +89,7 @@ impl MetaData {
     };
 
     Self {
+      id: Default::default(),
       path: path.into(),
       prop,
       link,
@@ -100,17 +109,26 @@ impl MetaData {
     }
     .pipe(Ok)
   }
+
+  pub fn to_json_pretty(&self) -> io::Result<String> {
+    serde_json::to_string_pretty(self).map_err(Into::into)
+  }
+
+  pub fn with_id(mut self, id: MiniStr) -> Self {
+    self.id = id;
+    self
+  }
 }
 
 fn init_file_time(metadata: &std::fs::Metadata) -> FileTime {
-  let Ok(c_time) = metadata.created() else {
+  let Ok(btime) = metadata.created() else {
     return Default::default();
   };
 
-  let created = offset_time::systime_to_rfc3339(c_time);
+  let created = offset_time::systime_to_rfc3339(btime);
 
   let modified = match metadata.modified() {
-    Ok(x) if x == c_time => None,
+    Ok(x) if x == btime => None,
     Ok(x) => offset_time::systime_to_rfc3339(x),
     _ => None,
   };
