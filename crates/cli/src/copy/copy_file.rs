@@ -3,7 +3,7 @@ use std::{fs, io, path::Path};
 use cardbox::{
   copy::{
     error::reject_non_dir_dst_for_multi_files,
-    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
+    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_parent_dir},
   },
   path::{eputs_path, split_last_path},
   utils::{eprint, eputs, puts},
@@ -27,7 +27,7 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
 
   let (dst_path, src_strs) = split_last_path(paths);
 
-  create_dst_dir(dst_path)?;
+  create_dst_parent_dir(dst_path)?;
 
   if src_strs.is_empty() {
     return copy_from_stdin_to_file(dst_path);
@@ -37,6 +37,8 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   }
 
   // === args.len() >= 3 ===
+  // file1 file2 dst_dir
+  // 当参数个数 >=3 时，dst_path 必须是目录。
   reject_non_dir_dst_for_multi_files(dst_path)?;
   fs::create_dir_all(dst_path)?;
   copy_all_files_to_dir(src_strs, dst_path)?;

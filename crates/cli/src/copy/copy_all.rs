@@ -4,7 +4,7 @@ use cardbox::{
   copy::{
     error::reject_non_dir_dst_for_multi_files,
     extra::copy_all as fs_copy_all,
-    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_dir},
+    file::{copy_from_stdin_to_file, copy_src_to_dst_file, create_dst_parent_dir},
   },
   path::split_last_path,
   utils::puts,
@@ -27,7 +27,7 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
 
   let (dst_path, src_strs) = split_last_path(args);
 
-  create_dst_dir(dst_path)?;
+  create_dst_parent_dir(dst_path)?;
 
   if src_strs.is_empty() {
     return copy_from_stdin_to_file(dst_path);

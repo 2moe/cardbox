@@ -19,7 +19,7 @@ use crate::{copy::error::io_invalid_input, fs::create_a_new_buf_writer};
 /// create_dst_dir(Path::new("/tmp/deep/nested/file.txt"))?; // creates `/tmp/deep/nested`
 /// # Ok::<(), std::io::Error>(())
 /// ```
-pub fn create_dst_dir<P: AsRef<Path>>(dst: P) -> io::Result<()> {
+pub fn create_dst_parent_dir<P: AsRef<Path>>(dst: P) -> io::Result<()> {
   let dst_path = dst.as_ref();
 
   match dst_path.is_dir() {
@@ -100,17 +100,23 @@ pub fn copy_src_to_dst_file<S: AsRef<Path>, D: AsRef<Path>>(
       .pipe(Err)?;
   }
 
-  if src_path == dst_path {
-    "src and dst are the same file, nothing to do!"
-      .pipe(io_invalid_input)
-      .pipe(Err)?;
-  }
-
-  let dst_path = resolve_dst_file_path(src_path, dst_path)
-    .ok_or_else(|| io_invalid_input("Destination path should not be a directory"))?;
+  let dst_path = validate_and_resolve_dst_path(src_path, dst_path)?;
 
   fs::copy(src_path, dst_path)?;
   Ok(())
+}
+
+pub fn validate_and_resolve_dst_path<'a>(
+  src_path: &'a Path,
+  dst_path: &'a Path,
+) -> io::Result<Cow<'a, Path>> {
+  if src_path == dst_path {
+    "src and dst are the same path, nothing to do!"
+      .pipe(io_invalid_input)
+      .pipe(Err)?;
+  }
+  resolve_dst_file_path(src_path, dst_path)
+    .ok_or_else(|| io_invalid_input("Destination path should not be a directory"))
 }
 
 /// Decide the final destination path for a single file copy.

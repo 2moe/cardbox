@@ -8,6 +8,9 @@ mod commands;
 use cardbox::utils::eprint;
 use tap::Pipe;
 
+/// update command:
+/// 1. [commands::all_available_commands]
+/// 2. [parse_and_run_command]
 fn main() -> io::Result<()> {
   let args = env::args().collect::<Vec<_>>();
 
@@ -62,6 +65,11 @@ mod target_info;
 #[cfg(feature = "list")]
 mod list;
 
+#[cfg(feature = "link-hard")]
+mod link_hard;
+#[cfg(feature = "link-sym")]
+mod link_sym;
+
 // ===================
 fn parse_and_run_command(
   program_stem: &str,
@@ -79,6 +87,11 @@ fn parse_and_run_command(
     //
     #[cfg(feature = "list")]
     "list" => list::run(rest_args),
+    //
+    #[cfg(feature = "link-hard")]
+    "link-hard" => link_hard::run(rest_args),
+    #[cfg(feature = "link-sym")]
+    "link-sym" => link_sym::run(rest_args),
     //
     #[cfg(feature = "rename")]
     "rename" => {

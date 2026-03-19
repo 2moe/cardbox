@@ -24,6 +24,11 @@ pub(crate) fn all_available_commands() -> Box<[&'static str]> {
     #[cfg(feature = "list")]
     "list",
     //
+    #[cfg(feature = "link-hard")]
+    "link-hard",
+    #[cfg(feature = "link-sym")]
+    "link-sym",
+    //
     #[cfg(feature = "rename")]
     "rename",
     //
