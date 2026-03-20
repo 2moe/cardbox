@@ -113,8 +113,9 @@ pub fn validate_and_resolve_dst_path<'a>(
   if src_path == dst_path {
     "src and dst are the same path, nothing to do!"
       .pipe(io_invalid_input)
-      .pipe(Err)?;
+      .pipe(Err)?
   }
+
   resolve_dst_file_path(src_path, dst_path)
     .ok_or_else(|| io_invalid_input("Destination path should not be a directory"))
 }

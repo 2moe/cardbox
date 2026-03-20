@@ -38,8 +38,8 @@ time = { workspace = true, features = ["formatting"] }
 default = []
 copy-all = ["cardbox/copy_all"]
 copy-file = []
-link-hard = []
-link-sym = []
+link-hard = ["cardbox/link"]
+link-sym = ["cardbox/link"]
 list = [
   "cardbox/list",
   "dep:compact_str",

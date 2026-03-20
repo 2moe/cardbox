@@ -3,13 +3,7 @@ use std::{
   path::Path,
 };
 
-use cardbox::{
-  copy::{
-    error::io_invalid_input,
-    file::{create_dst_parent_dir, validate_and_resolve_dst_path},
-  },
-  utils::{eputs, puts},
-};
+use cardbox::{copy::error::io_invalid_input, utils::puts};
 use tap::Pipe;
 
 use crate::commands::is_first_help_flag;
@@ -25,24 +19,18 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
   }
 
   if paths.len() < 2 {
-    "[ERR] Not enough arguments
-    Usage: link-hard [/path/to/src-file] [/path/to/dst]"
-      .pipe(io_invalid_input)
-      .pipe(Err)?
+    err_not_enough_args()?
   }
   let [src_path, dst_path] = [&paths[0], &paths[1]].map(Path::new);
-  create_dst_parent_dir(dst_path)?;
 
-  let dst_path = validate_and_resolve_dst_path(src_path, dst_path)?;
+  cardbox::fs::link::link_hard(src_path, dst_path)
+}
 
-  if dst_path.exists()
-    && let Err(e) = std::fs::remove_file(&dst_path)
-  {
-    eputs("[WARN] Failed to remove existing file")?;
-    eputs(e.to_string())?;
-  }
-
-  std::fs::hard_link(src_path, dst_path)
+fn err_not_enough_args() -> Result<(), io::Error> {
+  "[ERR] Not enough arguments
+    Usage: link-hard [/path/to/src-file] [/path/to/dst]"
+    .pipe(io_invalid_input)
+    .pipe(Err)
 }
 
 fn help() -> io::Result<()> {

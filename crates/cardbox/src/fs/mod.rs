@@ -6,6 +6,11 @@ use std::{
 
 use tap::Pipe;
 
+use crate::{copy::file::validate_and_resolve_dst_path, utils::eputs};
+
+#[cfg(feature = "link")]
+pub mod link;
+
 /// Creates a new buffered writer for a path.
 ///
 /// # Example
@@ -35,4 +40,16 @@ pub fn create_a_new_file<P: AsRef<Path>>(path: P) -> io::Result<File> {
     .write(true)
     .truncate(true)
     .open(path)
+}
+
+pub fn rename_path(src_path: &Path, dst_path: &Path) -> Result<(), io::Error> {
+  let dst_path = validate_and_resolve_dst_path(src_path, dst_path)?;
+  if dst_path.exists()
+    && src_path.is_file()
+    && let Err(e) = std::fs::remove_file(&dst_path)
+  {
+    eputs("[WARN] Failed to remove existing file")?;
+    eputs(e.to_string())?;
+  }
+  std::fs::rename(src_path, dst_path)
 }

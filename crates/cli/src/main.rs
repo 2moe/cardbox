@@ -70,6 +70,9 @@ mod link_hard;
 #[cfg(feature = "link-sym")]
 mod link_sym;
 
+#[cfg(feature = "rename")]
+mod rename;
+
 // ===================
 fn parse_and_run_command(
   program_stem: &str,
@@ -94,9 +97,7 @@ fn parse_and_run_command(
     "link-sym" => link_sym::run(rest_args),
     //
     #[cfg(feature = "rename")]
-    "rename" => {
-      todo!()
-    }
+    "rename" => rename::run(rest_args),
     //
     #[cfg(feature = "run-cmd")]
     "run-cmd" => {

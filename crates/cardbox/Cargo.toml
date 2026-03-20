@@ -43,11 +43,12 @@ rustix = { workspace = true, features = ["alloc", "stdio"], optional = true }
 [features]
 default = []
 copy_all = ["dep:fs_extra"]
+link = []
 list = [
-  "compact_str/serde",
+  "dep:compact_str",
   "dep:time",
   "dep:tinystr",
   "serde",
 ]
-serde = ["dep:serde", "dep:serde_json", "dep:serde_with"]
+serde = ["compact_str?/serde", "dep:serde", "dep:serde_json", "dep:serde_with"]
 uts_name = ["rustix/system"]
