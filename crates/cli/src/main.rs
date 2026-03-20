@@ -73,6 +73,9 @@ mod link_sym;
 #[cfg(feature = "rename")]
 mod rename;
 
+#[cfg(feature = "run-cmd")]
+mod run_cmd;
+
 // ===================
 fn parse_and_run_command(
   program_stem: &str,

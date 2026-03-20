@@ -20,10 +20,12 @@ all-features = true
 argh = { workspace = true, optional = true }
 cardbox = { workspace = true }
 compact_str = { workspace = true, features = ["serde"], optional = true }
+# json5 = { workspace = true, optional = true }
 rayon = { workspace = true, optional = true }
 serde = { workspace = true, features = ["std"], optional = true }
 serde_json = { workspace = true, optional = true }
 tap.workspace = true
+toml = { workspace = true, optional = true }
 
 [build-dependencies]
 serde_json.workspace = true
@@ -47,10 +49,11 @@ list = [
   "serde",
 ]
 rename = []
-# unlink-ino
-# remove-empty
-# remove-all
-run-cmd = []
+run-cmd = ["cardbox/run_cmd", "dep:toml", "serde"]
+# remove-file = []
+# remove-all = []
+# remove-empty = []
+# unlink-ino = []
 serde = ["dep:serde", "dep:serde_json"]
 # argh = ["dep:argh"]
 # ===

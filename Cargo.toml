@@ -18,11 +18,13 @@ keywords = ["busybox", "cli", "coreutils", "utility"]
 categories = ["command-line-utilities"]
 
 [workspace.dependencies]
+ahash = "0.8"
 anyhow = { version = "1.0", default-features = false }
 argh = "0.1.14"
 cardbox = { path = "crates/cardbox" }
 compact_str = { version = "0.9", default-features = false }
 fs_extra = "1.3.0"
+json5 = "1.3.1"
 libc = { version = "0.2.182", default-features = false }
 log = "0.4.29"
 rayon = "1.11.0"
@@ -36,30 +38,21 @@ serde_with = { version = "3.18.0", default-features = false, features = [
   "alloc",
   "macros"
 ] }
+syscalls = { version = "0.8.1", default-features = false }  # Linux
 tap = "1.0"
-# path = "../testutils"
-testutils = { version = "0.0.12", default-features = false }
+testutils = { version = "0.0.12", default-features = false }  # path = "../testutils"
 time = { version = "0.3", default-features = false }
 tinystr = "0.8.2"
-
-# Linux
-syscalls = { version = "0.8.1", default-features = false }
-
-# Unix like
-# libc-print = "0.1.23"
-
-# musl Linux
-# mimalloc = "0.1.48"
-
-# Windows
-windows-sys = { version = "0.61.2", default-features = false }
+tinyvec = { version = "1.11.0", features = ["alloc", "rustc_1_61"] }
+toml = "1.0.7"
+# mimalloc = "0.1.48" # musl Linux
+windows-sys = { version = "0.61.2", default-features = false }  # Windows
 
 [workspace.lints.rust.unexpected_cfgs]
 level = "warn"
 check-cfg = ["cfg(rust_analyzer)"]
 
 [dependencies]
-time.workspace = true
 
 [dev-dependencies]
 anyhow.workspace = true

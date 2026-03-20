@@ -19,8 +19,10 @@ repository.workspace = true
 all-features = true
 
 [dependencies]
+ahash = { workspace = true, optional = true }
 compact_str = { workspace = true, optional = true }
 fs_extra = { workspace = true, optional = true }
+json5 = { workspace = true, optional = true }
 serde = { workspace = true, features = ["std"], optional = true }
 serde_json = { workspace = true, optional = true }
 serde_with = { workspace = true, optional = true }
@@ -28,6 +30,7 @@ serde_with = { workspace = true, optional = true }
 tap.workspace = true
 time = { workspace = true, features = ["formatting", "local-offset", "std"], optional = true }
 tinystr = { workspace = true, features = ["serde"], optional = true }
+tinyvec = { workspace = true, optional = true }
 
 [build-dependencies]
 testutils = { workspace = true, features = [
@@ -50,5 +53,19 @@ list = [
   "dep:tinystr",
   "serde",
 ]
-serde = ["compact_str?/serde", "dep:serde", "dep:serde_json", "dep:serde_with"]
+run_cmd = [  #
+  "dep:ahash",
+  "dep:compact_str",
+  "dep:tinyvec",
+  "json5",
+  "serde"
+]
+serde = [
+  "ahash?/serde",
+  "compact_str?/serde",
+  "dep:serde",
+  "dep:serde_json",
+  "dep:serde_with",
+  "tinyvec?/serde"
+]
 uts_name = ["rustix/system"]

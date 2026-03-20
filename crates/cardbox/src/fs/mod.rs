@@ -1,6 +1,6 @@
 use std::{
-  fs::File,
-  io::{self, BufWriter},
+  fs::{self, File},
+  io::{self, BufReader, BufWriter},
   path::Path,
 };
 
@@ -33,6 +33,12 @@ pub fn create_a_new_buf_writer<P: AsRef<Path>>(
     .pipe(Ok)
 }
 
+pub fn wrap_buf_reader<P: AsRef<Path>>(path: P) -> io::Result<BufReader<File>> {
+  File::open(path)?
+    .pipe(BufReader::new)
+    .pipe(Ok)
+}
+
 /// OpenOptions: create + write + truncate + open
 pub fn create_a_new_file<P: AsRef<Path>>(path: P) -> io::Result<File> {
   File::options()
@@ -46,10 +52,10 @@ pub fn rename_path(src_path: &Path, dst_path: &Path) -> Result<(), io::Error> {
   let dst_path = validate_and_resolve_dst_path(src_path, dst_path)?;
   if dst_path.exists()
     && src_path.is_file()
-    && let Err(e) = std::fs::remove_file(&dst_path)
+    && let Err(e) = fs::remove_file(&dst_path)
   {
     eputs("[WARN] Failed to remove existing file")?;
     eputs(e.to_string())?;
   }
-  std::fs::rename(src_path, dst_path)
+  fs::rename(src_path, dst_path)
 }

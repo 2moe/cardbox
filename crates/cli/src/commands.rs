@@ -6,10 +6,18 @@ use std::{
 use cardbox::utils::{eprint, eputs, puts};
 use tap::Pipe;
 
+/// all available commands.
+///
+/// > Since different features are enabled at compile time, the length is
+/// > unknown; this function uses a heap-allocated container (`Box<[]>`) instead
+/// > of a const array.
+///
+/// <details>
+///  <summary>zh</summary>
+///   由于在编译期会启用不同的 features, 因此使用 heap 分配的容器，而不是 const
+/// array。
+///  </details>
 pub(crate) fn all_available_commands() -> Box<[&'static str]> {
-  // #[cfg(unix)]
-  // #[cfg(feature = "uts-name")]
-  // "uts-name",
   vec![
     #[cfg(feature = "copy-file")]
     "copy-file",

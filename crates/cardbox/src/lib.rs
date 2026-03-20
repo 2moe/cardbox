@@ -12,6 +12,8 @@ pub mod fs;
 #[cfg(feature = "list")]
 pub mod list;
 
+pub mod run_cmd;
+
 pub mod path;
 
 // === UNIX only ===
