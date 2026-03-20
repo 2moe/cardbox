@@ -103,9 +103,8 @@ fn parse_and_run_command(
     "rename" => rename::run(rest_args),
     //
     #[cfg(feature = "run-cmd")]
-    "run-cmd" => {
-      todo!()
-    }
+    "run-cmd" => run_cmd::run(rest_args),
+    //
     _ if rest_args.is_none() => commands::help_info(),
     _ => run_cardbox(rest_args),
   }

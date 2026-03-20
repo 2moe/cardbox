@@ -79,6 +79,7 @@ dependencies = [
  "compact_str",
  "fs_extra",
  "json5",
+ "log",
  "rustix",
  "serde",
  "serde_json",
@@ -88,6 +89,7 @@ dependencies = [
  "time",
  "tinystr",
  "tinyvec",
+ "toml",
 ]
 
 [[package]]
@@ -103,7 +105,6 @@ dependencies = [
  "tap",
  "testutils",
  "time",
- "toml",
 ]
 
 [[package]]

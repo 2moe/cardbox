@@ -1,10 +1,14 @@
 use std::{
-  io::{self},
+  fs,
+  io::{self, Read},
   path::Path,
 };
 
-use cardbox::utils::{eputs, puts};
-use tap::Pipe;
+use cardbox::{
+  run_cmd::{CmdData, ConfigFmt},
+  utils::puts,
+};
+use tap::{Pipe, Tap};
 
 use crate::commands::is_first_help_flag;
 
@@ -17,13 +21,37 @@ pub(crate) fn run(args: Option<&[String]>) -> io::Result<()> {
     return help();
   }
 
-  for path in path_strs.iter().map(Path::new) {
-    if !path.exists() {
-      eputs("[WARN] json/toml path does not exist, skipping: {path:?}")?;
-      continue;
-    }
+  let mut stdin_found = false;
+  for path_s in path_strs {
+    let data = match stdin_found {
+      false if path_s == "-" => {
+        stdin_found = true;
+        let mut buf = String::with_capacity(128);
+        io::stdin().read_to_string(&mut buf)?;
+        buf
+      }
+      _ if Path::new(path_s).exists() => fs::read_to_string(path_s)?,
+      _ => {
+        eprintln!("[WARN] json/toml path does not exist, skipping: {path_s}");
+        continue;
+      }
+    };
 
-    //
+    let fmt = {
+      use ConfigFmt::*;
+      match path_s.rsplit('.').next() {
+        Some(x) if x.eq_ignore_ascii_case("toml") => Toml,
+        Some(x)
+          if x.eq_ignore_ascii_case("json") || x.eq_ignore_ascii_case("json5") =>
+        {
+          Json5
+        }
+        _ => Unknown,
+      }
+    };
+    CmdData::new(&data, fmt)?
+      // .tap(|s| eprintln!("{s:#?}"))
+      .run()?
   }
 
   Ok(())
@@ -54,7 +82,8 @@ sample.toml:
   stdout = "stdout.txt"
   stderr = "stderr.txt"
 
-  timeout = 1000
+  # 2500 ms => 2.5s
+  timeout = 2500
   working_dir = "/tmp"
 
   [env]
@@ -68,7 +97,7 @@ sample.json5:
     // stdin_path: "",
     stdout: "stdout.txt",
     stderr: "stderr.txt",
-    timeout: 1000,
+    timeout: 2500,
     working_dir: "/tmp",
     env: {
       DATA_HOME: "/home/user/tmp",
